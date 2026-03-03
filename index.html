@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ClinTrack — C.L.A.I.M.S. Pvt. Ltd.</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #060910; font-family: system-ui, sans-serif; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #090d18; }
+    ::-webkit-scrollbar-thumb { background: #1e2a3a; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #2d4460; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel" data-presets="react">
+    const { useState, useEffect } = React;
+
+const T = {
+  bg:"#060910",s0:"#090d18",s1:"#0d1220",s2:"#121928",s3:"#182030",s4:"#1e2a3a",
+  border:"#1a2640",teal:"#06d6a0",tealG:"rgba(6,214,160,0.08)",
+  blue:"#4895ef",blueG:"rgba(72,149,239,0.08)",indig:"#7c83f5",
+  amber:"#ffb703",ambG:"rgba(255,183,3,0.08)",rose:"#ef476f",roseG:"rgba(239,71,111,0.08)",
+  text:"#e2eaf6",mid:"#4e6a8a",dim:"#2d4460",mono:"'Courier New', monospace",
+};
+
+const STUDIES_DATA = [
+  { id:"CL-183",fullId:"CL/183/0126/STU",sponsor:"Pontika",product:"Advance Aloe Vera Sunscreen Gel",category:"Sunscreen",status:"Completed",phase:"Closed",enrolled:28,target:24,completers:26,start:"04/02/2026",end:"13/02/2026",pi:"Dr. R. Mehta",coordinator:"Priya Singh",protocol:"IS 4011:2018",site:"C.L.A.I.M.S. Pvt. Ltd., Koldongri",objective:"Skin irritation patch test for cosmetic product safety evaluation.",draize:0.12,v1:true,v2:true,v3:true,v4:false,aes:1 },
+  { id:"CL-187",fullId:"CL/187/0126/STU",sponsor:"Millennium Herbal",product:"Salicylic Acid Face Wash 2%",category:"Face Wash",status:"Completed",phase:"Closed",enrolled:25,target:24,completers:24,start:"04/02/2026",end:"13/02/2026",pi:"Dr. R. Mehta",coordinator:"Priya Singh",protocol:"IS 4011:2018",site:"C.L.A.I.M.S. Pvt. Ltd., Koldongri",objective:"Repeat insult patch test for skin irritation potential of salicylic acid formulation.",draize:0.08,v1:true,v2:true,v3:true,v4:false,aes:0 },
+  { id:"CL-188",fullId:"CL/188/0126/STU",sponsor:"Earthy Biome",product:"Barrier Repair Hand Cream",category:"Moisturiser",status:"Active",phase:"V3 Scoring",enrolled:30,target:24,completers:null,start:"04/02/2026",end:"13/02/2026",pi:"Dr. R. Mehta",coordinator:"Priya Singh",protocol:"IS 4011:2018",site:"C.L.A.I.M.S. Pvt. Ltd., Koldongri",objective:"Evaluation of skin compatibility and irritation potential of barrier repair formulation.",draize:null,v1:true,v2:true,v3:false,v4:false,aes:0 },
+  { id:"CL-190",fullId:"CL/190/0126/STU",sponsor:"Bjain Pharma",product:"Presto! Hand Wash — 5 Variants",category:"Hand Wash",status:"Active",phase:"V2 Removal",enrolled:27,target:24,completers:null,start:"04/02/2026",end:"13/02/2026",pi:"Dr. R. Mehta",coordinator:"Priya Singh",protocol:"IS 4011:2018",site:"C.L.A.I.M.S. Pvt. Ltd., Koldongri",objective:"Comparative irritation assessment across 5 hand wash variants under occlusive conditions.",draize:null,v1:true,v2:false,v3:false,v4:false,aes:1 },
+  { id:"CL-191",fullId:"CL/191/0126/STU",sponsor:"Swara Baby",product:"Baby Diaper Pants S/M/L/XL",category:"Baby Product",status:"Screening",phase:"V1 Active",enrolled:18,target:24,completers:null,start:"04/02/2026",end:"13/02/2026",pi:"Dr. R. Mehta",coordinator:"Priya Singh",protocol:"IS 4011:2018",site:"C.L.A.I.M.S. Pvt. Ltd., Koldongri",objective:"Skin compatibility assessment of baby diaper pants across size variants.",draize:null,v1:false,v2:false,v3:false,v4:false,aes:0 },
+];
+
+const PARTICIPANTS_DATA = [
+  { id:"V-001",study:"CL-183",age:28,gender:"F",fitzpatrick:"IV", consent:"Signed", screening:"Passed",status:"Completed",v1:true, v2:true, v3:true, v4:false },
+  { id:"V-002",study:"CL-183",age:34,gender:"M",fitzpatrick:"III",consent:"Signed", screening:"Passed",status:"Completed",v1:true, v2:true, v3:true, v4:false },
+  { id:"V-003",study:"CL-183",age:45,gender:"F",fitzpatrick:"IV", consent:"Signed", screening:"Passed",status:"Withdrawn",v1:true, v2:false,v3:false,v4:false },
+  { id:"V-004",study:"CL-183",age:22,gender:"F",fitzpatrick:"V",  consent:"Signed", screening:"Passed",status:"Completed",v1:true, v2:true, v3:true, v4:false },
+  { id:"V-005",study:"CL-183",age:31,gender:"M",fitzpatrick:"III",consent:"Signed", screening:"Failed", status:"Excluded", v1:false,v2:false,v3:false,v4:false },
+  { id:"V-006",study:"CL-187",age:29,gender:"F",fitzpatrick:"IV", consent:"Signed", screening:"Passed",status:"Completed",v1:true, v2:true, v3:true, v4:false },
+  { id:"V-007",study:"CL-187",age:38,gender:"M",fitzpatrick:"III",consent:"Signed", screening:"Passed",status:"Completed",v1:true, v2:true, v3:true, v4:false },
+  { id:"V-008",study:"CL-188",age:26,gender:"F",fitzpatrick:"IV", consent:"Signed", screening:"Passed",status:"Active",   v1:true, v2:true, v3:false,v4:false },
+  { id:"V-009",study:"CL-188",age:41,gender:"M",fitzpatrick:"IV", consent:"Signed", screening:"Passed",status:"Active",   v1:true, v2:true, v3:false,v4:false },
+  { id:"V-010",study:"CL-188",age:33,gender:"F",fitzpatrick:"V",  consent:"Signed", screening:"Passed",status:"Active",   v1:true, v2:true, v3:false,v4:false },
+  { id:"V-011",study:"CL-190",age:24,gender:"F",fitzpatrick:"III",consent:"Signed", screening:"Passed",status:"Active",   v1:true, v2:false,v3:false,v4:false },
+  { id:"V-012",study:"CL-190",age:52,gender:"M",fitzpatrick:"IV", consent:"Signed", screening:"Passed",status:"Active",   v1:true, v2:false,v3:false,v4:false },
+  { id:"V-013",study:"CL-190",age:37,gender:"F",fitzpatrick:"IV", consent:"Signed", screening:"Passed",status:"Active",   v1:true, v2:false,v3:false,v4:false },
+  { id:"V-014",study:"CL-191",age:25,gender:"F",fitzpatrick:"III",consent:"Signed", screening:"Passed",status:"Active",   v1:false,v2:false,v3:false,v4:false },
+  { id:"V-015",study:"CL-191",age:29,gender:"M",fitzpatrick:"IV", consent:"Pending",screening:"—",     status:"Pending",  v1:false,v2:false,v3:false,v4:false },
+  { id:"V-016",study:"CL-191",age:44,gender:"F",fitzpatrick:"V",  consent:"Signed", screening:"Passed",status:"Active",   v1:false,v2:false,v3:false,v4:false },
+];
+
+// Unique volunteer registry — one record per person, separate from study enrollments
+const VOLUNTEERS_DATA = [
+  { id:"V-001", name:"Ananya Desai",   age:28, gender:"F", fitzpatrick:"IV",  phone:"98201 11001", city:"Mumbai",   bloodGroup:"B+", allergies:"None known",  consentDate:"03/02/2026" },
+  { id:"V-002", name:"Rohan Patil",    age:34, gender:"M", fitzpatrick:"III", phone:"98201 11002", city:"Mumbai",   bloodGroup:"O+", allergies:"None known",  consentDate:"03/02/2026" },
+  { id:"V-003", name:"Sunita Nair",    age:45, gender:"F", fitzpatrick:"IV",  phone:"98201 11003", city:"Thane",    bloodGroup:"A+", allergies:"Sulphates",   consentDate:"03/02/2026" },
+  { id:"V-004", name:"Preethi Rao",    age:22, gender:"F", fitzpatrick:"V",   phone:"98201 11004", city:"Pune",     bloodGroup:"AB-",allergies:"None known",  consentDate:"03/02/2026" },
+  { id:"V-005", name:"Kiran Mehta",    age:31, gender:"M", fitzpatrick:"III", phone:"98201 11005", city:"Mumbai",   bloodGroup:"O-", allergies:"Latex",       consentDate:"03/02/2026" },
+  { id:"V-006", name:"Fatima Sheikh",  age:29, gender:"F", fitzpatrick:"IV",  phone:"98201 11006", city:"Navi Mumbai",bloodGroup:"A+",allergies:"None known", consentDate:"03/02/2026" },
+  { id:"V-007", name:"Amit Sharma",    age:38, gender:"M", fitzpatrick:"III", phone:"98201 11007", city:"Kalyan",   bloodGroup:"B+", allergies:"None known",  consentDate:"03/02/2026" },
+  { id:"V-008", name:"Deepa Kulkarni", age:26, gender:"F", fitzpatrick:"IV",  phone:"98201 11008", city:"Mumbai",   bloodGroup:"O+", allergies:"Fragrance",   consentDate:"03/02/2026" },
+  { id:"V-009", name:"Suresh Iyer",    age:41, gender:"M", fitzpatrick:"IV",  phone:"98201 11009", city:"Pune",     bloodGroup:"A-", allergies:"None known",  consentDate:"03/02/2026" },
+  { id:"V-010", name:"Meena Joshi",    age:33, gender:"F", fitzpatrick:"V",   phone:"98201 11010", city:"Thane",    bloodGroup:"B-", allergies:"None known",  consentDate:"03/02/2026" },
+  { id:"V-011", name:"Kavitha Reddy",  age:24, gender:"F", fitzpatrick:"III", phone:"98201 11011", city:"Mumbai",   bloodGroup:"O+", allergies:"None known",  consentDate:"03/02/2026" },
+  { id:"V-012", name:"Nikhil Jain",    age:52, gender:"M", fitzpatrick:"IV",  phone:"98201 11012", city:"Navi Mumbai",bloodGroup:"A+",allergies:"Parabens",   consentDate:"03/02/2026" },
+  { id:"V-013", name:"Roshni Verma",   age:37, gender:"F", fitzpatrick:"IV",  phone:"98201 11013", city:"Mumbai",   bloodGroup:"B+", allergies:"None known",  consentDate:"03/02/2026" },
+  { id:"V-014", name:"Pooja Menon",    age:25, gender:"F", fitzpatrick:"III", phone:"98201 11014", city:"Kalyan",   bloodGroup:"O+", allergies:"None known",  consentDate:"03/02/2026" },
+  { id:"V-015", name:"Arjun Pillai",   age:29, gender:"M", fitzpatrick:"IV",  phone:"98201 11015", city:"Thane",    bloodGroup:"AB+",allergies:"None known",  consentDate:null },
+  { id:"V-016", name:"Shalini Tiwari", age:44, gender:"F", fitzpatrick:"V",   phone:"98201 11016", city:"Mumbai",   bloodGroup:"A+", allergies:"None known",  consentDate:"03/02/2026" },
+];
+
+const ALERTS = [
+  // CRITICAL
+  { id:"A1", sev:"critical", icon:"🚨", tag:"Enrollment",    title:"CL-191 Below Minimum Enrolment",         body:"18 enrolled vs 24 required. Screening window closes in 9 days. Accelerate recruitment immediately.",        act:"Manage Enrolment",       mod:"studies"        },
+  { id:"A2", sev:"critical", icon:"⏳", tag:"Accountability", title:"5 PAFs Pending Sponsor Approval",        body:"30-day destruction deadline active. Deadline 15 Mar 2026 — 13 days remaining. Send reminders to all 5 sponsors.", act:"Review PAFs",           mod:"accountability" },
+  { id:"A3", sev:"critical", icon:"⚠",  tag:"Protocol",      title:"Visit Window Breach — V-008 (CL-188)",   body:"V3 scoring due by 06/02/2026 09:00. Current time exceeds 48h window by 3h 12m. PI sign-off required.",     act:"View Execution Logs",    mod:"execution"      },
+  { id:"A4", sev:"critical", icon:"🧪", tag:"COA",           title:"3 Batches — Expiry Date Not on File",     body:"PAL/AASG-E/26/001, MHCL/SAFW-RCPC/07/25, B0401262M9: sponsor must confirm shelf-life before study closure.", act:"View COA Registry",      mod:"coa"            },
+  // WARNING
+  { id:"A5", sev:"warning",  icon:"👥", tag:"Compliance",    title:"Concurrent Enrolment Conflict",           body:"V-006 & V-007 active in CL-188 and CL-190 simultaneously. Verify washout period compliance with PI.",        act:"View Volunteers",        mod:"participants"   },
+  { id:"A6", sev:"warning",  icon:"📋", tag:"AE",            title:"AE-001 Causality Upgraded — Re-review",  body:"Erythema on V-003 upgraded from Possible to Probable. Sponsor notification letter may need to be revised.",     act:"View Adverse Events",    mod:"adverse"        },
+  { id:"A7", sev:"warning",  icon:"📦", tag:"Accountability", title:"CL-191 Product Quantity Low",            body:"Baby Diaper Pants: 8 units remaining for 6 pending participants. Confirm sufficient stock with Swara Baby.",    act:"View Accountability",    mod:"accountability" },
+  { id:"A8", sev:"warning",  icon:"📝", tag:"Consent",       title:"V-015 Consent Still Pending",             body:"Arjun Pillai enrolled in CL-191 with no signed ICP on file. Study cannot proceed without consent.",           act:"View Volunteers",        mod:"participants"   },
+  // INFO
+  { id:"A9", sev:"info",     icon:"✅", tag:"COA",           title:"All 5 COAs Verified — No Failures",       body:"Every product batch tested and compliant across all microbiology and chemistry parameters. No action needed.",   act:"View COA Registry",      mod:"coa"            },
+  { id:"A10",sev:"info",     icon:"🏁", tag:"Studies",       title:"CL-183 & CL-187 Ready for Closure",      body:"Both studies completed, all Draize scores entered, PAFs prepared. Awaiting final sponsor sign-off only.",       act:"View Studies",           mod:"studies"        },
+  { id:"A11",sev:"info",     icon:"📊", tag:"Scoring",       title:"Mean Draize Score: 0.10 (Non-Irritant)",  body:"Across 50 scored participants, all products classify as non-irritant under IS 4011:2018. Excellent result.",    act:"View Execution Logs",    mod:"execution"      },
+];
+
+const VISIT_STATS = { done:57, total:72 };
+
+const NAV = [
+  { id:"dashboard",      label:"Dashboard",      icon:"⬡",  group:"main"       },
+  { id:"studies",        label:"Studies",         icon:"🧪",  group:"main"       },
+  { id:"participants",   label:"Participants",    icon:"👥",  group:"main"       },
+  { id:"coa",            label:"Product & COA",  icon:"🧫",  group:"main"       },
+  { id:"alerts",         label:"Alerts",          icon:"🔔",  group:"ops"        },
+  { id:"execution",      label:"Execution Logs", icon:"📋",  group:"ops"        },
+  { id:"adverse",        label:"Adverse Events", icon:"⚠️", group:"ops"        },
+  { id:"accountability", label:"Accountability", icon:"📦",  group:"ops"        },
+  { id:"audit",          label:"Audit Trail",    icon:"🔒",  group:"compliance" },
+];
+
+const BLANK = { fullId:"",sponsor:"",product:"",category:"Sunscreen",status:"Setup",phase:"Setup",enrolled:0,target:24,completers:null,start:"",end:"",pi:"Dr. R. Mehta",coordinator:"Priya Singh",protocol:"IS 4011:2018",site:"C.L.A.I.M.S. Pvt. Ltd., Koldongri",objective:"" };
+
+function useClock(){const[n,sN]=useState(new Date());useEffect(()=>{const id=setInterval(()=>sN(new Date()),1000);return()=>clearInterval(id);},[]);return n;}
+
+const sColor = s=>({Completed:T.teal,Active:T.blue,Screening:T.amber,Setup:T.mid})[s]||T.mid;
+const pColor = s=>({Completed:T.teal,Active:T.blue,Withdrawn:T.rose,Excluded:T.rose,Pending:T.amber})[s]||T.mid;
+
+const Pill=({label,color=T.teal})=>(<span style={{background:`${color}18`,color,border:`1px solid ${color}40`,borderRadius:4,fontSize:10,fontWeight:700,padding:"2px 8px",letterSpacing:"0.4px",whiteSpace:"nowrap",fontFamily:T.mono}}>{label}</span>);
+
+const Panel=({children,style={}})=>(<div style={{background:T.s1,border:`1px solid ${T.border}`,borderRadius:12,overflow:"hidden",...style}}>{children}</div>);
+
+const PHead=({title,sub,right,accent=T.teal})=>(<div style={{padding:"13px 18px",borderBottom:`1px solid ${T.border}`,display:"flex",justifyContent:"space-between",alignItems:"center",background:`linear-gradient(90deg,${accent}0a 0%,transparent 60%)`}}><div><div style={{fontSize:12,fontWeight:800,color:T.text}}>{title}</div>{sub&&<div style={{fontSize:10,color:T.mid,marginTop:2}}>{sub}</div>}</div>{right}</div>);
+
+const NBtn=({label,onClick})=>(<button onClick={onClick} style={{background:"none",border:"none",color:T.teal,fontSize:11,fontWeight:700,cursor:"pointer",padding:0}}>{label} →</button>);
+
+const Btn=({label,onClick,variant="primary",small=false})=>{
+  const s={primary:{bg:T.teal,border:T.teal,color:T.bg},secondary:{bg:"transparent",border:T.border,color:T.mid},danger:{bg:"transparent",border:T.rose,color:T.rose}}[variant];
+  return(<button onClick={onClick} style={{background:s.bg,border:`1px solid ${s.border}`,color:s.color,borderRadius:7,padding:small?"6px 14px":"8px 18px",fontSize:small?12:13,fontWeight:700,cursor:"pointer",transition:"opacity 0.15s"}} onMouseEnter={e=>e.currentTarget.style.opacity="0.75"} onMouseLeave={e=>e.currentTarget.style.opacity="1"}>{label}</button>);
+};
+
+const Field=({label,value,mono=false,highlight})=>(<div style={{background:T.s2,borderRadius:8,padding:"12px 14px"}}><div style={{fontSize:10,fontWeight:700,color:T.dim,letterSpacing:"0.6px",textTransform:"uppercase",marginBottom:5}}>{label}</div><div style={{fontSize:13,fontWeight:600,color:highlight||T.text,fontFamily:mono?T.mono:"inherit"}}>{value||<span style={{color:T.dim}}>—</span>}</div></div>);
+
+const FInput=({label,value,onChange,placeholder,type="text",mono=false})=>(<div><div style={{fontSize:11,fontWeight:600,color:T.mid,marginBottom:5}}>{label}</div><input type={type} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} style={{width:"100%",background:T.s2,border:`1px solid ${T.border}`,borderRadius:7,padding:"9px 12px",fontSize:13,color:T.text,fontFamily:mono?T.mono:"inherit",outline:"none",boxSizing:"border-box"}} onFocus={e=>e.target.style.borderColor=T.teal} onBlur={e=>e.target.style.borderColor=T.border}/></div>);
+
+const FSelect=({label,value,onChange,options})=>(<div><div style={{fontSize:11,fontWeight:600,color:T.mid,marginBottom:5}}>{label}</div><select value={value} onChange={e=>onChange(e.target.value)} style={{width:"100%",background:T.s2,border:`1px solid ${T.border}`,borderRadius:7,padding:"9px 12px",fontSize:13,color:T.text,outline:"none",cursor:"pointer"}}>{options.map(o=><option key={o} value={o}>{o}</option>)}</select></div>);
+
+const FArea=({label,value,onChange,placeholder,rows=3})=>(<div><div style={{fontSize:11,fontWeight:600,color:T.mid,marginBottom:5}}>{label}</div><textarea value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} rows={rows} style={{width:"100%",background:T.s2,border:`1px solid ${T.border}`,borderRadius:7,padding:"9px 12px",fontSize:13,color:T.text,outline:"none",resize:"vertical",boxSizing:"border-box",fontFamily:"inherit"}} onFocus={e=>e.target.style.borderColor=T.teal} onBlur={e=>e.target.style.borderColor=T.border}/></div>);
+
+const KpiCard=({label,value,context,color,icon,flag,flagColor,onClick})=>(<div onClick={onClick} style={{background:T.s1,border:`1px solid ${flag?`${flagColor}44`:T.border}`,borderRadius:12,padding:"20px 22px",position:"relative",cursor:onClick?"pointer":"default",transition:"transform 0.15s, box-shadow 0.15s",boxShadow:flag?`0 0 0 1px ${flagColor}22`:"none"}} onMouseEnter={e=>{if(onClick){e.currentTarget.style.transform="translateY(-1px)";e.currentTarget.style.boxShadow=`0 6px 24px ${color}18`;}}} onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow=flag?`0 0 0 1px ${flagColor}22`:"none";}}><div style={{position:"absolute",top:0,left:0,right:0,height:2,borderRadius:"12px 12px 0 0",background:`linear-gradient(90deg,${color},transparent 70%)`}}/>{flag&&<div style={{position:"absolute",top:14,right:14,width:7,height:7,borderRadius:"50%",background:flagColor,boxShadow:`0 0 6px ${flagColor}`}}/>}<div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12}}><span style={{fontSize:11,color:T.mid,fontWeight:500}}>{label}</span><span style={{fontSize:20,opacity:0.75}}>{icon}</span></div><div style={{fontSize:34,fontWeight:800,color,lineHeight:1,marginBottom:8,fontFamily:"Georgia,serif",letterSpacing:"-0.5px"}}>{value}</div><div style={{fontSize:12,color:flag?flagColor:T.mid,fontWeight:flag?600:400,lineHeight:1.4}}>{context}</div></div>);
+
+const StudyRow=({s,onOpen})=>{
+  const pct=Math.min(100,(s.enrolled/s.target)*100);
+  const c=sColor(s.status);
+  const belowMin=s.status==="Screening"&&s.enrolled<s.target;
+  return(<div onClick={onOpen} style={{padding:"13px 18px",borderBottom:`1px solid ${T.border}`,cursor:"pointer",transition:"background 0.15s"}} onMouseEnter={e=>e.currentTarget.style.background=T.s2} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+    <div style={{display:"flex",gap:12,alignItems:"center"}}>
+      <div style={{width:7,height:7,borderRadius:"50%",flexShrink:0,background:c,boxShadow:s.status==="Active"?`0 0 7px ${c}`:"none"}}/>
+      <div style={{flex:1,minWidth:0}}>
+        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:3}}>
+          <span style={{fontFamily:T.mono,fontSize:10,color:T.teal}}>{s.id}</span>
+          <span style={{fontSize:13,fontWeight:600,color:T.text,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{s.sponsor}</span>
+          {s.aes>0&&<Pill label={`${s.aes} AE`} color={T.amber}/>}
+          {belowMin&&<Pill label="Below min" color={T.rose}/>}
+        </div>
+        <div style={{fontSize:11,color:T.mid,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:7}}>{s.product}</div>
+        <div style={{display:"flex",gap:8,alignItems:"center"}}>
+          <div style={{flex:1,height:3,background:T.s4,borderRadius:4,overflow:"hidden"}}><div style={{height:3,borderRadius:4,width:`${pct}%`,background:s.status==="Completed"?T.teal:belowMin?T.rose:T.blue,transition:"width 0.8s"}}/></div>
+          <span style={{fontSize:10,color:belowMin?T.rose:T.mid,fontWeight:belowMin?700:400,flexShrink:0}}>{s.enrolled}/{s.target}</span>
+        </div>
+      </div>
+      <div style={{textAlign:"right",flexShrink:0}}>
+        <Pill label={s.status} color={c}/>
+        <div style={{fontSize:10,color:T.mid,marginTop:4}}>{s.phase}</div>
+        {s.draize!==null&&<div style={{fontSize:9,color:T.teal,fontFamily:T.mono,marginTop:2}}>Draize {s.draize.toFixed(2)}</div>}
+      </div>
+    </div>
+    <div style={{display:"flex",gap:6,marginTop:8,paddingLeft:19}}>
+      {[["V1",s.v1],["V2",s.v2],["V3",s.v3],["V4",s.v4]].map(([lbl,done])=>(
+        <div key={lbl} style={{display:"flex",alignItems:"center",gap:3}}>
+          <div style={{width:13,height:13,borderRadius:"50%",fontSize:7,fontWeight:800,display:"flex",alignItems:"center",justifyContent:"center",background:done?`${T.teal}28`:T.s4,border:`1.5px solid ${done?T.teal:T.dim}`,color:done?T.teal:T.dim}}>{done?"✓":"·"}</div>
+          <span style={{fontSize:9,color:done?T.teal:T.dim}}>{lbl}</span>
+        </div>
+      ))}
+    </div>
+  </div>);
+};
+
+const AlertRow=({a,onNav,compact=false})=>{
+  const c={critical:T.rose,warning:T.amber,info:T.teal}[a.sev];
+  return(<div style={{padding:compact?"10px 16px":"12px 18px",borderBottom:`1px solid ${T.border}`,borderLeft:`3px solid ${c}`,background:`${c}06`,transition:"background 0.15s",cursor:"pointer"}} onClick={()=>onNav(a.mod)} onMouseEnter={e=>e.currentTarget.style.background=`${c}12`} onMouseLeave={e=>e.currentTarget.style.background=`${c}06`}>
+    <div style={{display:"flex",gap:10,alignItems:"flex-start"}}>
+      <span style={{fontSize:compact?13:15,flexShrink:0,marginTop:1}}>{a.icon}</span>
+      <div style={{flex:1,minWidth:0}}>
+        <div style={{display:"flex",gap:6,alignItems:"center",marginBottom:3,flexWrap:"wrap"}}>
+          <span style={{fontSize:10,fontWeight:700,color:c}}>{a.title}</span>
+          {a.tag&&<span style={{fontSize:8,fontWeight:700,color:c,background:`${c}18`,border:`1px solid ${c}33`,borderRadius:3,padding:"1px 5px",letterSpacing:"0.4px",textTransform:"uppercase",flexShrink:0}}>{a.tag}</span>}
+        </div>
+        {!compact&&<p style={{fontSize:11,color:T.mid,margin:"0 0 5px",lineHeight:1.5}}>{a.body}</p>}
+        <span style={{fontSize:10,color:c,fontWeight:700}}>{a.act} →</span>
+      </div>
+    </div>
+  </div>);
+};
+
+const StudyForm=({initial,onSave,onCancel,isEdit=false})=>{
+  const[f,setF]=useState({...initial});
+  const set=(k,v)=>setF(p=>({...p,[k]:v}));
+  return(<div>
+    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:24}}>
+      <div>
+        <h2 style={{fontSize:20,fontWeight:800,color:T.text,margin:"0 0 4px"}}>{isEdit?"Edit Study":"New Study"}</h2>
+        <p style={{fontSize:12,color:T.mid,margin:0}}>{isEdit?`Editing ${initial.fullId||initial.id}`:"Fill in all fields before activating the study"}</p>
+      </div>
+      <div style={{display:"flex",gap:10}}>
+        <Btn label="Cancel" onClick={onCancel} variant="secondary"/>
+        <Btn label={isEdit?"Save Changes":"Create Study"} onClick={()=>onSave(f)}/>
+      </div>
+    </div>
+    <div style={{display:"flex",flexDirection:"column",gap:16}}>
+      <Panel>
+        <PHead title="Study Identity" accent={T.teal}/>
+        <div style={{padding:"18px",display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
+          <FInput label="Study ID" value={f.fullId} onChange={v=>set("fullId",v)} placeholder="CL/000/0126/STU" mono/>
+          <FSelect label="Status" value={f.status} onChange={v=>set("status",v)} options={["Setup","Screening","Active","Completed","Closed"]}/>
+          <FInput label="Sponsor" value={f.sponsor} onChange={v=>set("sponsor",v)} placeholder="Sponsor name"/>
+          <FSelect label="Category" value={f.category} onChange={v=>set("category",v)} options={["Sunscreen","Face Wash","Moisturiser","Hand Wash","Baby Product","Other"]}/>
+          <div style={{gridColumn:"1/-1"}}><FInput label="Product Name" value={f.product} onChange={v=>set("product",v)} placeholder="Full product name as received from sponsor"/></div>
+        </div>
+      </Panel>
+      <Panel>
+        <PHead title="Protocol & Logistics" accent={T.blue}/>
+        <div style={{padding:"18px",display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
+          <FInput label="Start Date" value={f.start} onChange={v=>set("start",v)} placeholder="DD/MM/YYYY"/>
+          <FInput label="End Date" value={f.end} onChange={v=>set("end",v)} placeholder="DD/MM/YYYY"/>
+          <FInput label="Principal Investigator" value={f.pi} onChange={v=>set("pi",v)}/>
+          <FInput label="Study Coordinator" value={f.coordinator} onChange={v=>set("coordinator",v)}/>
+          <FInput label="Protocol Reference" value={f.protocol} onChange={v=>set("protocol",v)} placeholder="IS 4011:2018" mono/>
+          <FInput label="Target Enrollment (N)" value={String(f.target)} onChange={v=>set("target",parseInt(v)||0)} type="number"/>
+          <div style={{gridColumn:"1/-1"}}><FInput label="Site" value={f.site} onChange={v=>set("site",v)}/></div>
+          <div style={{gridColumn:"1/-1"}}><FArea label="Study Objective" value={f.objective} onChange={v=>set("objective",v)} placeholder="Brief description of the study's aim and test substance..." rows={3}/></div>
+        </div>
+      </Panel>
+    </div>
+  </div>);
+};
+
+const BLANK_PARTICIPANT = { age:"", gender:"F", fitzpatrick:"IV", consent:"Pending", screening:"—", notes:"" };
+
+const ZONES = ["Upper Back - Left","Upper Back - Right","Upper Back - Centre","Forearm - Left","Forearm - Right","Upper Arm - Left","Upper Arm - Right"];
+
+const defaultVisitData=(study)=>({
+  v1:{date:"",time:"09:00",zone:"Upper Back - Left",batch:"",appliedBy:study.coordinator,notes:""},
+  v2:{date:"",time:"09:15",removedBy:study.coordinator,earlyRemoval:false,earlyReason:"",condition:"Normal"},
+  v3:{date:"",time:"09:00",scoredBy:study.pi,erythema:0,dryness:0,oedema:0,notes:""},
+  v4:{date:"",notes:"",resolvedBy:study.pi,resolution:"Resolved"},
+});
+
+const ScoreBtn=({label,value,onChange,max})=>{
+  const color=value===0?T.teal:value<=1?T.amber:T.rose;
+  return(<div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:5}}>
+    <div style={{fontSize:9,fontWeight:700,color:T.mid,textTransform:"uppercase",letterSpacing:"0.5px",whiteSpace:"nowrap"}}>{label}</div>
+    <div style={{display:"flex",alignItems:"center",gap:6}}>
+      <button onClick={()=>onChange(Math.max(0,value-1))} style={{width:24,height:24,borderRadius:5,border:`1px solid ${T.border}`,background:T.s3,color:T.mid,fontSize:16,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1,fontWeight:700}}>−</button>
+      <div style={{width:36,height:36,borderRadius:8,background:`${color}22`,border:`1.5px solid ${color}55`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,fontWeight:800,color,fontFamily:T.mono,transition:"all 0.15s"}}>{value}</div>
+      <button onClick={()=>onChange(Math.min(max,value+1))} style={{width:24,height:24,borderRadius:5,border:`1px solid ${T.border}`,background:T.s3,color:T.mid,fontSize:16,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1,fontWeight:700}}>+</button>
+    </div>
+    <div style={{fontSize:9,color:T.dim}}>/ {max}</div>
+  </div>);
+};
+
+const VisitCard=({title,time,accent,done,saved,onSave,locked,lockedMsg,optional,children})=>(
+  <div style={{background:T.s1,border:`1px solid ${locked?T.border:done?`${accent}44`:T.border}`,borderRadius:10,overflow:"hidden"}}>
+    <div style={{padding:"12px 16px",borderBottom:`1px solid ${T.border}`,display:"flex",justifyContent:"space-between",alignItems:"center",background:`linear-gradient(90deg,${accent}0d,transparent 60%)`}}>
+      <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap"}}>
+        <div style={{width:9,height:9,borderRadius:"50%",background:done?accent:T.s4,border:`1.5px solid ${done?accent:T.dim}`,boxShadow:done?`0 0 7px ${accent}`:"none",flexShrink:0}}/>
+        <span style={{fontSize:13,fontWeight:700,color:done?accent:T.text}}>{title}</span>
+        <span style={{fontSize:10,color:T.dim,fontFamily:T.mono}}>{time}</span>
+        {optional&&<Pill label="Only if AE" color={T.amber}/>}
+        {done&&<Pill label="Saved" color={accent}/>}
+      </div>
+      {locked
+        ?<span style={{fontSize:11,color:T.dim}}>🔒 {lockedMsg}</span>
+        :<button onClick={onSave} style={{background:saved?T.tealG:`${accent}18`,border:`1px solid ${saved?T.teal:`${accent}44`}`,color:saved?T.teal:accent,borderRadius:6,padding:"5px 14px",fontSize:12,fontWeight:700,cursor:"pointer"}}>{saved?"✓ Saved":"Save Visit"}</button>
+      }
+    </div>
+    <div style={{padding:"16px"}}>
+      {locked?<div style={{fontSize:12,color:T.dim,textAlign:"center",padding:"8px 0"}}>Complete previous visit to unlock this section</div>:children}
+    </div>
+  </div>
+);
+
+const ParticipantVisitPanel=({p,study,onUpdate,showStudyCol=false})=>{
+  const[open,setOpen]=useState(false);
+  const[vd,setVd]=useState(()=>p.visitData||defaultVisitData(study));
+  const[saved,setSaved]=useState(null);
+  const setV=(visit,key,val)=>setVd(prev=>({...prev,[visit]:{...prev[visit],[key]:val}}));
+  const saveVisit=(visitKey)=>{
+    const v3total=vd.v3.erythema+vd.v3.dryness+vd.v3.oedema;
+    const updated={...p,visitData:vd,[visitKey]:true,...(visitKey==="v3"?{draizeScore:v3total,status:"Completed"}:{})};
+    onUpdate(updated);
+    setSaved(visitKey);
+    setTimeout(()=>setSaved(null),2200);
+  };
+  const v3total=vd.v3.erythema+vd.v3.dryness+vd.v3.oedema;
+  const classify=t=>t<=2?["Non-Irritant",T.teal]:t<=4?["Mild Irritant",T.amber]:["Irritant",T.rose];
+  const[classLabel,classColor]=classify(v3total);
+  const score=p.draizeScore!==undefined?p.draizeScore:null;
+
+  return(<div style={{borderBottom:`1px solid ${T.border}`}}>
+    <div onClick={()=>setOpen(o=>!o)} style={{display:"flex",alignItems:"center",gap:12,padding:"11px 16px",cursor:"pointer",transition:"background 0.15s",background:open?T.s2:"transparent"}} onMouseEnter={e=>{if(!open)e.currentTarget.style.background=T.s2;}} onMouseLeave={e=>{if(!open)e.currentTarget.style.background="transparent";}}>
+      <span style={{fontSize:10,color:open?T.teal:T.dim,transform:open?"rotate(90deg)":"rotate(0deg)",transition:"transform 0.2s",display:"inline-block",flexShrink:0}}>▶</span>
+      <span style={{fontFamily:T.mono,fontSize:12,fontWeight:700,color:T.teal,minWidth:58,flexShrink:0}}>{p.id}</span>
+      {showStudyCol&&<span style={{minWidth:110,flexShrink:0}}><span style={{fontFamily:T.mono,fontSize:10,color:T.blue}}>{p.study}</span><br/><span style={{fontSize:10,color:T.dim,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:100,display:"inline-block"}}>{study.sponsor||""}</span></span>}
+      {!showStudyCol&&<span style={{fontSize:12,color:T.mid,minWidth:36,flexShrink:0}}>{p.age}{p.gender}</span>}
+      {!showStudyCol&&<span style={{fontSize:11,color:T.dim,fontFamily:T.mono,flexShrink:0}}>FP-{p.fitzpatrick}</span>}
+      <Pill label={p.consent} color={p.consent==="Signed"?T.teal:p.consent==="Pending"?T.amber:T.rose}/>
+      <Pill label={p.screening} color={p.screening==="Passed"?T.teal:p.screening==="Failed"?T.rose:T.mid}/>
+      <Pill label={p.status} color={pColor(p.status)}/>
+      {score!==null&&<Pill label={`Draize ${score.toFixed(1)} — ${classify(score)[0]}`} color={classify(score)[1]}/>}
+      <div style={{marginLeft:"auto",display:"flex",gap:4,flexShrink:0}}>
+        {[["V1",p.v1,"Application"],["V2",p.v2,"Removal"],["V3",p.v3,"Scoring"],["V4",p.v4,"Follow-up"]].map(([lbl,done,tip])=>(
+          <div key={lbl} title={`${lbl}: ${tip}`} style={{width:22,height:22,borderRadius:"50%",fontSize:7,fontWeight:800,display:"flex",alignItems:"center",justifyContent:"center",background:done?`${T.teal}28`:T.s4,border:`1.5px solid ${done?T.teal:T.dim}`,color:done?T.teal:T.dim}}>{done?"✓":"·"}</div>
+        ))}
+      </div>
+    </div>
+    {open&&(
+      <div style={{background:T.s0,borderTop:`1px solid ${T.border}`,padding:"16px 18px",display:"flex",flexDirection:"column",gap:12}}>
+        <VisitCard title="V1 — Patch Application" time="0 Hours" accent={T.teal} done={p.v1} saved={saved==="v1"} onSave={()=>saveVisit("v1")} locked={p.screening!=="Passed"} lockedMsg="Participant not screened">
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:12}}>
+            <FSelect label="Application Zone" value={vd.v1.zone} onChange={v=>setV("v1","zone",v)} options={ZONES}/>
+            <FInput label="Batch Number" value={vd.v1.batch} onChange={v=>setV("v1","batch",v)} placeholder="e.g. PAL/AASG-E/26/001" mono/>
+            <FInput label="Applied By" value={vd.v1.appliedBy} onChange={v=>setV("v1","appliedBy",v)}/>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+              <FInput label="Date" value={vd.v1.date} onChange={v=>setV("v1","date",v)} placeholder="DD/MM/YYYY"/>
+              <FInput label="Time" value={vd.v1.time} onChange={v=>setV("v1","time",v)} placeholder="HH:MM"/>
+            </div>
+            <div style={{gridColumn:"1/-1"}}><FArea label="Notes at Application" value={vd.v1.notes} onChange={v=>setV("v1","notes",v)} placeholder="Skin condition before application, any observations..." rows={2}/></div>
+          </div>
+        </VisitCard>
+        <VisitCard title="V2 — Patch Removal" time="24 Hours" accent={T.blue} done={p.v2} saved={saved==="v2"} onSave={()=>saveVisit("v2")} locked={!p.v1} lockedMsg="Complete V1 first">
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:12}}>
+            <FInput label="Removed By" value={vd.v2.removedBy} onChange={v=>setV("v2","removedBy",v)}/>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+              <FInput label="Date" value={vd.v2.date} onChange={v=>setV("v2","date",v)} placeholder="DD/MM/YYYY"/>
+              <FInput label="Time" value={vd.v2.time} onChange={v=>setV("v2","time",v)} placeholder="HH:MM"/>
+            </div>
+            <FSelect label="Site Condition" value={vd.v2.condition} onChange={v=>setV("v2","condition",v)} options={["Normal","Abnormal — Mild","Abnormal — Moderate","Abnormal — Severe"]}/>
+            <FSelect label="Early Removal?" value={vd.v2.earlyRemoval?"Yes":"No"} onChange={v=>setV("v2","earlyRemoval",v==="Yes")} options={["No","Yes"]}/>
+            {vd.v2.earlyRemoval&&<div style={{gridColumn:"1/-1"}}><FInput label="Early Removal Reason" value={vd.v2.earlyReason} onChange={v=>setV("v2","earlyReason",v)} placeholder="Reason for removing patch before 24h..."/></div>}
+          </div>
+        </VisitCard>
+        <VisitCard title="V3 — Skin Scoring (Draize)" time="48 Hours" accent={T.indig} done={p.v3} saved={saved==="v3"} onSave={()=>saveVisit("v3")} locked={!p.v2} lockedMsg="Complete V2 first">
+          <div style={{display:"flex",flexDirection:"column",gap:14}}>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12}}>
+              <FInput label="Scored By (PI)" value={vd.v3.scoredBy} onChange={v=>setV("v3","scoredBy",v)}/>
+              <FInput label="Date" value={vd.v3.date} onChange={v=>setV("v3","date",v)} placeholder="DD/MM/YYYY"/>
+              <FInput label="Time" value={vd.v3.time} onChange={v=>setV("v3","time",v)} placeholder="HH:MM"/>
+            </div>
+            <div style={{background:T.s2,borderRadius:10,padding:"18px 22px",display:"flex",alignItems:"center",gap:28,flexWrap:"wrap"}}>
+              <ScoreBtn label="Erythema" value={vd.v3.erythema} onChange={v=>setV("v3","erythema",v)} max={4}/>
+              <div style={{width:1,height:48,background:T.border,flexShrink:0}}/>
+              <ScoreBtn label="Dryness / Scaling" value={vd.v3.dryness} onChange={v=>setV("v3","dryness",v)} max={2}/>
+              <div style={{width:1,height:48,background:T.border,flexShrink:0}}/>
+              <ScoreBtn label="Oedema" value={vd.v3.oedema} onChange={v=>setV("v3","oedema",v)} max={4}/>
+              <div style={{marginLeft:"auto",display:"flex",gap:16,alignItems:"center"}}>
+                <div style={{textAlign:"center"}}>
+                  <div style={{fontSize:9,fontWeight:700,color:T.mid,textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:8}}>Total Score</div>
+                  <div style={{width:52,height:52,borderRadius:10,background:`${classColor}22`,border:`2px solid ${classColor}55`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,fontWeight:800,color:classColor,fontFamily:T.mono}}>{v3total}</div>
+                </div>
+                <div style={{textAlign:"center"}}>
+                  <div style={{fontSize:9,fontWeight:700,color:T.mid,textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:8}}>Classification</div>
+                  <Pill label={classLabel} color={classColor}/>
+                  <div style={{fontSize:9,color:T.dim,marginTop:6}}>IS 4011:2018</div>
+                </div>
+              </div>
+            </div>
+            <FArea label="PI Scoring Notes" value={vd.v3.notes} onChange={v=>setV("v3","notes",v)} placeholder="Any abnormalities, comments by PI..." rows={2}/>
+          </div>
+        </VisitCard>
+        <VisitCard title="V4 — Follow-up" time="1 Week" accent={T.amber} done={p.v4} saved={saved==="v4"} onSave={()=>saveVisit("v4")} locked={!p.v3} lockedMsg="Complete V3 first" optional>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12}}>
+            <FInput label="Follow-up Date" value={vd.v4.date} onChange={v=>setV("v4","date",v)} placeholder="DD/MM/YYYY"/>
+            <FInput label="Resolved By" value={vd.v4.resolvedBy} onChange={v=>setV("v4","resolvedBy",v)}/>
+            <FSelect label="Resolution Status" value={vd.v4.resolution} onChange={v=>setV("v4","resolution",v)} options={["Resolved","Ongoing","Referred to Dermatologist"]}/>
+            <div style={{gridColumn:"1/-1"}}><FArea label="Follow-up Notes" value={vd.v4.notes} onChange={v=>setV("v4","notes",v)} placeholder="Resolution details, final status..." rows={2}/></div>
+          </div>
+        </VisitCard>
+      </div>
+    )}
+  </div>);
+};
+
+const StudyDetail=({study, parts, onAddParticipant, onUpdateParticipant, onBack, onEdit})=>{
+  const[tab,setTab]=useState("overview");
+  const[showForm,setShowForm]=useState(false);
+  const[form,setForm]=useState({...BLANK_PARTICIPANT});
+  const[errors,setErrors]=useState({});
+  const setF=(k,v)=>setForm(p=>({...p,[k]:v}));
+
+  const validate=()=>{
+    const e={};
+    if(!form.age||isNaN(form.age)||Number(form.age)<18||Number(form.age)>65) e.age="Age must be 18–65";
+    return e;
+  };
+
+  const handleAdd=()=>{
+    const e=validate();
+    if(Object.keys(e).length){setErrors(e);return;}
+    const allIds=parts.map(p=>parseInt(p.id.replace("V-",""))||0);
+    const nextNum=String(Math.max(0,...allIds)+1).padStart(3,"0");
+    const screening=form.consent==="Signed"?"Passed":"—";
+    const newP={
+      id:`V-${nextNum}`, study:study.id,
+      age:Number(form.age), gender:form.gender,
+      fitzpatrick:form.fitzpatrick,
+      consent:form.consent, screening,
+      status:form.consent==="Signed"&&screening==="Passed"?"Active":"Pending",
+      v1:false,v2:false,v3:false,v4:false
+    };
+    onAddParticipant(newP);
+    setForm({...BLANK_PARTICIPANT});
+    setErrors({});
+    setShowForm(false);
+  };
+
+  const statusCol=sColor(study.status);
+  const belowMin=study.status==="Screening"&&study.enrolled<study.target;
+  const pct=Math.min(100,(parts.length/study.target)*100);
+
+  return(<div>
+    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
+      <button onClick={onBack} style={{background:"none",border:"none",color:T.teal,fontSize:13,fontWeight:700,cursor:"pointer",padding:0}}>← Back to Studies</button>
+      <Btn label="Edit Study" onClick={onEdit} variant="secondary" small/>
+    </div>
+
+    {/* study header card */}
+    <div style={{background:T.s1,border:`1px solid ${statusCol}44`,borderRadius:12,padding:"20px 24px",marginBottom:16,position:"relative",overflow:"hidden"}}>
+      <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:`linear-gradient(90deg,${statusCol},transparent 60%)`}}/>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:16}}>
+        <div>
+          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8,flexWrap:"wrap"}}>
+            <span style={{fontFamily:T.mono,fontSize:11,color:T.teal}}>{study.fullId}</span>
+            <Pill label={study.status} color={statusCol}/>
+            <Pill label={study.phase} color={T.mid}/>
+            {study.aes>0&&<Pill label={`${study.aes} AE`} color={T.amber}/>}
+            {belowMin&&<Pill label="Below minimum" color={T.rose}/>}
+          </div>
+          <h2 style={{fontSize:20,fontWeight:800,color:T.text,margin:"0 0 4px"}}>{study.sponsor}</h2>
+          <p style={{fontSize:13,color:T.mid,margin:"0 0 10px"}}>{study.product}</p>
+          <div style={{display:"flex",gap:16,flexWrap:"wrap"}}>
+            <div style={{fontSize:12,color:T.mid}}>📅 <span style={{color:T.text,fontWeight:600}}>{study.start} – {study.end}</span></div>
+            <div style={{fontSize:12,color:T.mid}}>👨‍⚕️ <span style={{color:T.text,fontWeight:600}}>{study.pi}</span></div>
+            <div style={{fontSize:12,color:T.mid}}>👤 <span style={{color:T.text,fontWeight:600}}>{study.coordinator}</span></div>
+          </div>
+        </div>
+        <div style={{textAlign:"right",flexShrink:0}}>
+          <div style={{fontSize:11,color:T.mid,marginBottom:4}}>Enrollment</div>
+          <div style={{fontSize:32,fontWeight:800,color:belowMin?T.rose:statusCol,fontFamily:"Georgia,serif",lineHeight:1}}>{parts.length}</div>
+          <div style={{fontSize:11,color:T.mid,marginBottom:8}}>of {study.target} target</div>
+          <div style={{width:110,height:5,background:T.s4,borderRadius:4,overflow:"hidden",marginLeft:"auto"}}>
+            <div style={{height:5,borderRadius:4,width:`${pct}%`,background:belowMin?T.rose:statusCol,transition:"width 0.8s"}}/>
+          </div>
+          {study.completers!==null&&<div style={{fontSize:11,color:T.teal,marginTop:6,fontWeight:600}}>{study.completers} completers</div>}
+        </div>
+      </div>
+    </div>
+
+    {/* tabs */}
+    <div style={{display:"flex",gap:4,marginBottom:16}}>
+      {[["overview","Overview"],["participants",`Participants (${parts.length})`]].map(([id,label])=>(
+        <button key={id} onClick={()=>{setTab(id);setShowForm(false);}} style={{padding:"8px 18px",borderRadius:7,border:`1px solid ${tab===id?T.teal:T.border}`,background:tab===id?T.tealG:"transparent",color:tab===id?T.teal:T.mid,fontSize:13,fontWeight:tab===id?700:400,cursor:"pointer",transition:"all 0.15s"}}>
+          {label}
+        </button>
+      ))}
+    </div>
+
+    {tab==="overview"&&(
+      <div style={{display:"flex",flexDirection:"column",gap:14}}>
+        <Panel>
+          <PHead title="Protocol Details" accent={T.teal}/>
+          <div style={{padding:"18px",display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12}}>
+            <Field label="Protocol Reference" value={study.protocol} mono highlight={T.teal}/>
+            <Field label="Study Site" value={study.site}/>
+            <Field label="Study Dates" value={`${study.start} – ${study.end}`}/>
+            <Field label="Principal Investigator" value={study.pi}/>
+            <Field label="Study Coordinator" value={study.coordinator}/>
+            <Field label="Product Category" value={study.category}/>
+          </div>
+        </Panel>
+        <Panel>
+          <PHead title="Study Objective" accent={T.blue}/>
+          <div style={{padding:"18px"}}>
+            <p style={{fontSize:13,color:T.text,lineHeight:1.7,margin:0}}>{study.objective}</p>
+          </div>
+        </Panel>
+        <Panel>
+          <PHead title="Visit Schedule" accent={T.indig}/>
+          <div style={{padding:"18px",display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
+            {[["V1","0 Hours","Consent · Screening · Patch Application",study.v1],["V2","24 Hours","Patch Removal · Condition Check",study.v2],["V3","48 Hours","Draize Skin Scoring · AE Assessment",study.v3],["V4","1 Week","Follow-up if reaction · Final resolution",study.v4]].map(([label,time,desc,done])=>(
+              <div key={label} style={{background:T.s2,borderRadius:8,padding:"14px",borderTop:`3px solid ${done?T.teal:T.s4}`}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
+                  <span style={{fontSize:13,fontWeight:800,color:done?T.teal:T.mid}}>{label}</span>
+                  <span style={{fontSize:10,color:T.mid,fontFamily:T.mono}}>{time}</span>
+                </div>
+                <div style={{fontSize:11,color:T.mid,lineHeight:1.5,marginBottom:10}}>{desc}</div>
+                <div style={{display:"flex",alignItems:"center",gap:5}}>
+                  <div style={{width:14,height:14,borderRadius:"50%",background:done?`${T.teal}28`:T.s4,border:`1.5px solid ${done?T.teal:T.dim}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:7,fontWeight:800,color:done?T.teal:T.dim}}>{done?"✓":"·"}</div>
+                  <span style={{fontSize:10,fontWeight:600,color:done?T.teal:T.dim}}>{done?"Completed":"Pending"}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Panel>
+        {study.draize!==null&&(
+          <Panel>
+            <PHead title="Draize Result" accent={T.teal}/>
+            <div style={{padding:"18px",display:"flex",gap:16,alignItems:"center"}}>
+              <div style={{textAlign:"center",background:T.tealG,border:`1px solid ${T.teal}44`,borderRadius:10,padding:"16px 28px",flexShrink:0}}>
+                <div style={{fontSize:36,fontWeight:800,color:T.teal,fontFamily:"Georgia,serif"}}>{study.draize.toFixed(2)}</div>
+                <div style={{fontSize:11,color:T.teal,fontWeight:700,marginTop:4}}>Mean Draize Score</div>
+              </div>
+              <div>
+                <Pill label="Non-Irritant" color={T.teal}/>
+                <p style={{fontSize:13,color:T.mid,margin:"8px 0 0",lineHeight:1.6}}>Score ≤ 2.0 classifies this product as <strong style={{color:T.teal}}>non-irritant</strong> under IS 4011:2018. All {study.completers} completers scored within acceptable range.</p>
+              </div>
+            </div>
+          </Panel>
+        )}
+      </div>
+    )}
+
+    {tab==="participants"&&(
+      <div style={{display:"flex",flexDirection:"column",gap:14}}>
+        {/* Add participant form */}
+        {showForm?(
+          <Panel>
+            <PHead title="Add Participant" sub="Fields marked * are required" accent={T.teal}/>
+            <div style={{padding:"18px",display:"flex",flexDirection:"column",gap:16}}>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:14}}>
+                <div>
+                  <FInput label="Age *" value={form.age} onChange={v=>setF("age",v)} placeholder="e.g. 28" type="number"/>
+                  {errors.age&&<div style={{fontSize:11,color:T.rose,marginTop:4}}>{errors.age}</div>}
+                </div>
+                <FSelect label="Gender" value={form.gender} onChange={v=>setF("gender",v)} options={["F","M"]}/>
+                <FSelect label="Fitzpatrick Type" value={form.fitzpatrick} onChange={v=>setF("fitzpatrick",v)} options={["I","II","III","IV","V","VI"]}/>
+                <FSelect label="Consent Status" value={form.consent} onChange={v=>setF("consent",v)} options={["Signed","Pending"]}/>
+              </div>
+              <div style={{padding:"12px 14px",background:T.s2,borderRadius:8,fontSize:12,color:T.mid,lineHeight:1.6}}>
+                ℹ Screening status will be set to <strong style={{color:T.text}}>Passed</strong> automatically when consent is Signed. Participant status will be set to <strong style={{color:T.text}}>Active</strong>.
+              </div>
+              <div style={{display:"flex",gap:10}}>
+                <Btn label="Add Participant" onClick={handleAdd}/>
+                <Btn label="Cancel" onClick={()=>{setShowForm(false);setErrors({});setForm({...BLANK_PARTICIPANT});}} variant="secondary"/>
+              </div>
+            </div>
+          </Panel>
+        ):(
+          <div style={{display:"flex",justifyContent:"flex-end"}}>
+            <Btn label="+ Add Participant" onClick={()=>setShowForm(true)}/>
+          </div>
+        )}
+
+        <Panel>
+          <PHead
+            title={`Participants — ${study.id}`}
+            sub={`${parts.filter(p=>p.status==="Completed").length} completed · ${parts.filter(p=>p.status==="Active").length} active · ${parts.filter(p=>["Withdrawn","Excluded"].includes(p.status)).length} dropped`}
+            accent={T.blue}
+            right={<div style={{display:"flex",gap:8}}><Pill label={`${parts.filter(p=>p.consent==="Signed").length}/${parts.length} consented`} color={T.teal}/><Pill label={`${parts.filter(p=>p.screening==="Passed").length} screened`} color={T.blue}/></div>}
+          />
+          {parts.length===0
+            ?<div style={{padding:"32px",textAlign:"center",color:T.mid,fontSize:13}}>No participants enrolled yet. Click <strong style={{color:T.teal}}>+ Add Participant</strong> above to begin.</div>
+            :<div>
+              <div style={{padding:"8px 16px",background:T.s2,borderBottom:`1px solid ${T.border}`,display:"flex",gap:12,alignItems:"center"}}>
+                <span style={{fontSize:9,fontWeight:700,color:T.dim,letterSpacing:"0.5px",textTransform:"uppercase",minWidth:58}}>ID</span>
+                <span style={{fontSize:9,fontWeight:700,color:T.dim,letterSpacing:"0.5px",textTransform:"uppercase",minWidth:36}}>Age</span>
+                <span style={{fontSize:9,fontWeight:700,color:T.dim,letterSpacing:"0.5px",textTransform:"uppercase"}}>Consent · Screening · Status · Draize</span>
+                <span style={{marginLeft:"auto",fontSize:9,fontWeight:700,color:T.dim,letterSpacing:"0.5px",textTransform:"uppercase"}}>Visits</span>
+              </div>
+              {parts.map(p=><ParticipantVisitPanel key={p.id} p={p} study={study} onUpdate={onUpdateParticipant}/>)}
+            </div>
+          }
+          <div style={{padding:"16px 18px",borderTop:`1px solid ${T.border}`,background:T.s0}}>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+              <div>
+                <div style={{fontSize:11,fontWeight:700,color:T.teal,marginBottom:8}}>✓ Inclusion Criteria</div>
+                {["Age 18–65, healthy skin","Fitzpatrick type III–V","Written consent provided","No active skin conditions"].map(item=>(<div key={item} style={{fontSize:12,color:T.mid,padding:"4px 0",borderBottom:`1px solid ${T.border}`}}>· {item}</div>))}
+              </div>
+              <div>
+                <div style={{fontSize:11,fontWeight:700,color:T.rose,marginBottom:8}}>✗ Exclusion Criteria</div>
+                {["Pregnancy or lactation","Active dermatological infection","Known hypersensitivity","Use of interfering medications"].map(item=>(<div key={item} style={{fontSize:12,color:T.mid,padding:"4px 0",borderBottom:`1px solid ${T.border}`}}>· {item}</div>))}
+              </div>
+            </div>
+          </div>
+        </Panel>
+      </div>
+    )}
+  </div>);
+};
+
+const StudiesPage=({studies,setStudies,participants,onAddParticipant,onUpdateParticipant})=>{
+  const[nav,setNav]=useState({view:"list",id:null});
+  const selected=studies.find(s=>s.id===nav.id)||null;
+  const selectedParts=selected?participants.filter(p=>p.study===selected.id):[];
+
+  const openDetail=id=>setNav({view:"detail",id});
+  const handleSave=f=>{
+    if(nav.view==="new"){
+      const nid=`CL-N${studies.length+1}`;
+      setStudies(p=>[...p,{...f,id:nid,draize:null,v1:false,v2:false,v3:false,v4:false,aes:0}]);
+      setNav({view:"list",id:null});
+    } else {
+      setStudies(p=>p.map(s=>s.id===nav.id?{...s,...f}:s));
+      setNav(n=>({...n,view:"detail"}));
+    }
+  };
+  if(nav.view==="new")                return <StudyForm initial={{...BLANK}} onSave={handleSave} onCancel={()=>setNav({view:"list",id:null})} isEdit={false}/>;
+  if(nav.view==="edit"   && selected) return <StudyForm initial={selected} onSave={handleSave} onCancel={()=>setNav(n=>({...n,view:"detail"}))} isEdit={true}/>;
+  if(nav.view==="detail" && selected) return <StudyDetail study={selected} parts={selectedParts} onAddParticipant={onAddParticipant} onUpdateParticipant={onUpdateParticipant} onBack={()=>setNav({view:"list",id:null})} onEdit={()=>setNav(n=>({...n,view:"edit"}))}/>;
+  if(nav.view!=="list")               return null;
+
+  const completed=studies.filter(s=>s.status==="Completed").length;
+  const active=studies.filter(s=>s.status==="Active").length;
+  const screening=studies.filter(s=>s.status==="Screening").length;
+
+  return(<div>
+    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:22}}>
+      <div>
+        <h2 style={{fontSize:20,fontWeight:800,color:T.text,margin:"0 0 4px"}}>Studies</h2>
+        <p style={{fontSize:12,color:T.mid,margin:0}}>February 2026 cohort · IS 4011:2018</p>
+      </div>
+      <Btn label="+ New Study" onClick={()=>setNav({view:"new",id:null})}/>
+    </div>
+    <InlineBanner sev="critical" icon="🚨" title="CL-191 below minimum enrolment" body="18 enrolled vs 24 required. Screening window closes in 9 days — accelerate recruitment or risk study invalidation."/>
+    <InlineBanner sev="info" icon="🏁" title="CL-183 & CL-187 ready for closure" body="Both studies completed. All Draize scores entered and PAFs prepared. Awaiting final sponsor sign-off only."/>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12,marginBottom:20}}>
+      {[["Completed",completed,T.teal],["Active",active,T.blue],["Screening",screening,T.amber]].map(([label,n,color])=>(
+        <div key={label} style={{background:T.s1,border:`1px solid ${T.border}`,borderRadius:10,padding:"14px 18px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <div><div style={{fontSize:11,color:T.mid,fontWeight:500,marginBottom:4}}>{label}</div><div style={{fontSize:26,fontWeight:800,color,fontFamily:"Georgia,serif"}}>{n}</div></div>
+          <div style={{width:8,height:8,borderRadius:"50%",background:color,boxShadow:label==="Active"?`0 0 8px ${color}`:"none"}}/>
+        </div>
+      ))}
+    </div>
+    <Panel>
+      <PHead title="All Studies" sub={`${studies.length} studies in this cohort`} accent={T.teal}/>
+      {studies.map(s=><StudyRow key={s.id} s={s} onOpen={()=>openDetail(s.id)}/>)}
+    </Panel>
+  </div>);
+};
+
+const ParticipantsPage=({studies,participants})=>{
+  const[search,setSearch]=useState("");
+  const[fitzFilter,setFitzFilter]=useState("ALL");
+  const[consentFilter,setConsentFilter]=useState("ALL");
+  const[selected,setSelected]=useState(null);
+
+  // Deduplicate: one row per volunteer ID, collect all study enrollments
+  const volunteers=VOLUNTEERS_DATA.map(v=>{
+    const enrollments=participants.filter(p=>p.id===v.id);
+    const consent=v.consentDate?"Signed":"Pending";
+    const anyFailed=enrollments.some(e=>e.screening==="Failed");
+    const anyPassed=enrollments.some(e=>e.screening==="Passed");
+    const screening=anyPassed?"Passed":anyFailed?"Failed":"—";
+    return{...v,enrollments,consent,screening};
+  });
+
+  const filtered=volunteers.filter(v=>{
+    if(fitzFilter!=="ALL"&&v.fitzpatrick!==fitzFilter) return false;
+    if(consentFilter!=="ALL"&&v.consent!==consentFilter) return false;
+    if(search){
+      const q=search.toLowerCase();
+      if(!v.id.toLowerCase().includes(q)&&!v.name.toLowerCase().includes(q)&&!v.city.toLowerCase().includes(q)) return false;
+    }
+    return true;
+  });
+
+  const total=volunteers.length;
+  const consented=volunteers.filter(v=>v.consent==="Signed").length;
+  const screened=volunteers.filter(v=>v.screening==="Passed").length;
+  const multiStudy=volunteers.filter(v=>v.enrollments.length>1).length;
+  const pendingConsent=volunteers.filter(v=>v.consent==="Pending").length;
+
+  const getStudyLabel=id=>{const s=studies.find(x=>x.id===id);return s?`${s.id} — ${s.sponsor}`:id;};
+  const getEnrollStatus=e=>e.status;
+
+  // Detail panel for a selected volunteer
+  if(selected){
+    const v=volunteers.find(x=>x.id===selected);
+    if(!v) return null;
+    return(<div>
+      <button onClick={()=>setSelected(null)} style={{background:"none",border:"none",color:T.teal,fontSize:13,fontWeight:700,cursor:"pointer",padding:0,marginBottom:20}}>← Back to Volunteer Registry</button>
+      <div style={{background:T.s1,border:`1px solid ${T.teal}33`,borderRadius:12,padding:"22px 26px",marginBottom:18,position:"relative",overflow:"hidden"}}>
+        <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:`linear-gradient(90deg,${T.teal},${T.blue} 60%,transparent)`}}/>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:16,flexWrap:"wrap"}}>
+          <div>
+            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
+              <div style={{width:42,height:42,borderRadius:"50%",background:`linear-gradient(135deg,${T.teal}44,${T.blue}44)`,border:`1.5px solid ${T.teal}55`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,fontWeight:800,color:T.teal,flexShrink:0}}>
+                {v.name.split(" ").map(w=>w[0]).join("").slice(0,2)}
+              </div>
+              <div>
+                <div style={{fontSize:18,fontWeight:800,color:T.text,lineHeight:1}}>{v.name}</div>
+                <div style={{fontFamily:T.mono,fontSize:11,color:T.teal,marginTop:3}}>{v.id}</div>
+              </div>
+            </div>
+            <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+              <Pill label={v.consent==="Signed"?"Consent Signed":"Consent Pending"} color={v.consent==="Signed"?T.teal:T.amber}/>
+              <Pill label={`Fitzpatrick ${v.fitzpatrick}`} color={T.blue}/>
+              <Pill label={`${v.enrollments.length} study enrollment${v.enrollments.length!==1?"s":""}`} color={T.indig}/>
+              {v.enrollments.length>1&&<Pill label="Multi-study volunteer" color={T.amber}/>}
+            </div>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,minWidth:320}}>
+            {[["Age / Gender",`${v.age} · ${v.gender==="F"?"Female":"Male"}`],["City",v.city],["Blood Group",v.bloodGroup],["Phone",v.phone],["Consent Date",v.consentDate||"—"],["Known Allergies",v.allergies]].map(([k,val])=>(
+              <div key={k} style={{background:T.s2,borderRadius:7,padding:"10px 12px"}}>
+                <div style={{fontSize:9,fontWeight:700,color:T.dim,textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:4}}>{k}</div>
+                <div style={{fontSize:12,fontWeight:600,color:v.allergies===val&&val!=="None known"?T.amber:T.text}}>{val}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <Panel>
+        <PHead title="Study Enrollments" sub={`${v.enrollments.length} enrollment${v.enrollments.length!==1?"s":""} · visit data managed within each study`} accent={T.blue}/>
+        {v.enrollments.length===0
+          ?<div style={{padding:"28px",textAlign:"center",color:T.mid,fontSize:13}}>Not enrolled in any studies yet.</div>
+          :v.enrollments.map((e,i)=>{
+            const study=studies.find(s=>s.id===e.study)||{};
+            const visitsDone=[e.v1,e.v2,e.v3,e.v4].filter(Boolean).length;
+            return(<div key={i} style={{padding:"14px 18px",borderBottom:`1px solid ${T.border}`,display:"flex",alignItems:"center",gap:16,flexWrap:"wrap"}}>
+              <div style={{flexShrink:0}}>
+                <div style={{fontFamily:T.mono,fontSize:11,color:T.teal,marginBottom:2}}>{e.study}</div>
+                <div style={{fontSize:13,fontWeight:600,color:T.text}}>{study.sponsor||"—"}</div>
+                <div style={{fontSize:11,color:T.mid,marginTop:1}}>{study.product||"—"}</div>
+              </div>
+              <div style={{flex:1,minWidth:200}}>
+                <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:6}}>
+                  <Pill label={e.screening==="Passed"?"Screening Passed":e.screening==="Failed"?"Screening Failed":"Not Screened"} color={e.screening==="Passed"?T.teal:e.screening==="Failed"?T.rose:T.mid}/>
+                  <Pill label={e.status} color={pColor(e.status)}/>
+                  {e.draizeScore!==undefined&&<Pill label={`Draize ${e.draizeScore.toFixed(1)}`} color={e.draizeScore<=2?T.teal:e.draizeScore<=4?T.amber:T.rose}/>}
+                </div>
+                <div style={{display:"flex",gap:4}}>
+                  {[["V1","Application",e.v1],["V2","Removal",e.v2],["V3","Scoring",e.v3],["V4","Follow-up",e.v4]].map(([lbl,tip,done])=>(
+                    <div key={lbl} style={{display:"flex",alignItems:"center",gap:4}}>
+                      <div title={`${lbl}: ${tip}`} style={{width:22,height:22,borderRadius:"50%",fontSize:7,fontWeight:800,display:"flex",alignItems:"center",justifyContent:"center",background:done?`${T.teal}28`:T.s4,border:`1.5px solid ${done?T.teal:T.dim}`,color:done?T.teal:T.dim}}>{done?"✓":"·"}</div>
+                      <span style={{fontSize:9,color:done?T.teal:T.dim}}>{lbl}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div style={{textAlign:"right",flexShrink:0}}>
+                <div style={{fontSize:11,color:T.mid,marginBottom:4}}>{visitsDone}/4 visits complete</div>
+                <div style={{width:80,height:4,background:T.s4,borderRadius:2,overflow:"hidden",marginLeft:"auto"}}>
+                  <div style={{height:4,width:`${(visitsDone/4)*100}%`,background:visitsDone===4?T.teal:T.blue,borderRadius:2}}/>
+                </div>
+                <div style={{fontSize:10,color:T.dim,marginTop:4}}>Visit data in Studies module →</div>
+              </div>
+            </div>);
+          })
+        }
+      </Panel>
+
+      <div style={{marginTop:16,padding:"12px 16px",background:T.s2,borderRadius:8,fontSize:12,color:T.mid,lineHeight:1.7}}>
+        ℹ Visit-level data (patch application, removal, Draize scoring) is managed within each Study's Participants tab, where it is linked to the specific product and protocol of that study.
+      </div>
+    </div>);
+  }
+
+  // List view
+  return(<div>
+    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:22}}>
+      <div>
+        <h2 style={{fontSize:20,fontWeight:800,color:T.text,margin:"0 0 4px"}}>Volunteer Registry</h2>
+        <p style={{fontSize:12,color:T.mid,margin:0}}>Master list of all volunteers · demographics, consent, and study enrollments</p>
+      </div>
+      <Btn label="+ Register Volunteer" onClick={()=>{}}/>
+    </div>
+
+    {/* KPIs */}
+    <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:12,marginBottom:20}}>
+      {[
+        ["Total Volunteers",total,T.blue,"👤"],
+        ["Consent Signed",consented,T.teal,"📝"],
+        ["Screening Passed",screened,T.teal,"✅"],
+        ["Multi-Study",multiStudy,T.indig,"🔁"],
+        ["Pending Consent",pendingConsent,T.amber,"⏳"],
+      ].map(([label,n,color,icon])=>(
+        <div key={label} style={{background:T.s1,border:`1px solid ${T.border}`,borderRadius:10,padding:"14px 16px",position:"relative",overflow:"hidden"}}>
+          <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:`linear-gradient(90deg,${color},transparent 70%)`}}/>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:8}}>
+            <span style={{fontSize:10,color:T.mid,fontWeight:500}}>{label}</span>
+            <span style={{fontSize:14,opacity:0.7}}>{icon}</span>
+          </div>
+          <div style={{fontSize:26,fontWeight:800,color,fontFamily:"Georgia,serif",lineHeight:1}}>{n}</div>
+        </div>
+      ))}
+    </div>
+
+    {/* Filters */}
+    <Panel style={{marginBottom:16}}>
+      <PHead title="Filter & Search" accent={T.blue}/>
+      <div style={{padding:"14px 16px",display:"flex",gap:14,flexWrap:"wrap",alignItems:"flex-end"}}>
+        <div style={{minWidth:200}}>
+          <div style={{fontSize:10,fontWeight:600,color:T.mid,marginBottom:5,textTransform:"uppercase",letterSpacing:"0.5px"}}>Search name or ID</div>
+          <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="e.g. V-005 or Ananya" style={{background:T.s2,border:`1px solid ${T.border}`,borderRadius:7,padding:"8px 12px",fontSize:12,color:T.text,outline:"none",width:"100%",boxSizing:"border-box"}} onFocus={e=>e.target.style.borderColor=T.teal} onBlur={e=>e.target.style.borderColor=T.border}/>
+        </div>
+        <div>
+          <div style={{fontSize:10,fontWeight:600,color:T.mid,marginBottom:5,textTransform:"uppercase",letterSpacing:"0.5px"}}>Fitzpatrick Type</div>
+          <div style={{display:"flex",gap:5}}>
+            {["ALL","III","IV","V"].map(f=>(
+              <button key={f} onClick={()=>setFitzFilter(f)} style={{padding:"5px 11px",borderRadius:5,border:`1px solid ${fitzFilter===f?T.blue:T.border}`,background:fitzFilter===f?T.blueG:"transparent",color:fitzFilter===f?T.blue:T.mid,fontSize:11,fontWeight:fitzFilter===f?700:400,cursor:"pointer"}}>{f==="ALL"?"All Types":`Type ${f}`}</button>
+            ))}
+          </div>
+        </div>
+        <div>
+          <div style={{fontSize:10,fontWeight:600,color:T.mid,marginBottom:5,textTransform:"uppercase",letterSpacing:"0.5px"}}>Consent</div>
+          <div style={{display:"flex",gap:5}}>
+            {["ALL","Signed","Pending"].map(c=>(
+              <button key={c} onClick={()=>setConsentFilter(c)} style={{padding:"5px 11px",borderRadius:5,border:`1px solid ${consentFilter===c?T.teal:T.border}`,background:consentFilter===c?T.tealG:"transparent",color:consentFilter===c?T.teal:T.mid,fontSize:11,fontWeight:consentFilter===c?700:400,cursor:"pointer"}}>{c}</button>
+            ))}
+          </div>
+        </div>
+        {(search||fitzFilter!=="ALL"||consentFilter!=="ALL")&&(
+          <button onClick={()=>{setSearch("");setFitzFilter("ALL");setConsentFilter("ALL");}} style={{alignSelf:"flex-end",padding:"8px 14px",borderRadius:7,border:`1px solid ${T.rose}44`,background:T.roseG,color:T.rose,fontSize:11,fontWeight:700,cursor:"pointer"}}>✕ Clear</button>
+        )}
+        <div style={{marginLeft:"auto",alignSelf:"flex-end",fontSize:11,color:T.dim}}>{filtered.length} of {total} volunteers</div>
+      </div>
+    </Panel>
+
+    {/* Volunteer table */}
+    <Panel>
+      <PHead title="All Volunteers" sub="Click a row to view profile and study enrollments" accent={T.blue}
+        right={<Pill label={`${multiStudy} in multiple studies`} color={T.indig}/>}
+      />
+      {/* Header */}
+      <div style={{display:"grid",gridTemplateColumns:"44px 1fr 80px 80px 90px 80px 120px 120px",gap:0,background:T.s2,borderBottom:`1px solid ${T.border}`,padding:"8px 18px"}}>
+        {["ID","Name","Age","Gender","Fitzpatrick","Blood","Consent","Studies"].map(h=>(
+          <span key={h} style={{fontSize:9,fontWeight:700,color:T.dim,textTransform:"uppercase",letterSpacing:"0.5px"}}>{h}</span>
+        ))}
+      </div>
+      {filtered.length===0
+        ?<div style={{padding:"40px",textAlign:"center",color:T.mid,fontSize:13}}>No volunteers match the current filters.</div>
+        :filtered.map(v=>{
+          const hasFlag=v.allergies!=="None known"||v.consent==="Pending";
+          return(<div key={v.id} onClick={()=>setSelected(v.id)}
+            style={{display:"grid",gridTemplateColumns:"44px 1fr 80px 80px 90px 80px 120px 120px",gap:0,padding:"12px 18px",borderBottom:`1px solid ${T.border}`,cursor:"pointer",alignItems:"center",transition:"background 0.15s"}}
+            onMouseEnter={e=>e.currentTarget.style.background=T.s2}
+            onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+            {/* Avatar */}
+            <div style={{width:30,height:30,borderRadius:"50%",background:`linear-gradient(135deg,${T.teal}33,${T.blue}33)`,border:`1px solid ${T.teal}44`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,color:T.teal}}>
+              {v.name.split(" ").map(w=>w[0]).join("").slice(0,2)}
+            </div>
+            {/* Name + ID */}
+            <div>
+              <div style={{display:"flex",alignItems:"center",gap:7}}>
+                <span style={{fontSize:13,fontWeight:600,color:T.text}}>{v.name}</span>
+                {hasFlag&&<span style={{fontSize:9,color:T.amber}}>⚠</span>}
+              </div>
+              <span style={{fontFamily:T.mono,fontSize:10,color:T.teal}}>{v.id}</span>
+            </div>
+            <div style={{fontSize:13,color:T.text}}>{v.age}</div>
+            <div style={{fontSize:12,color:T.mid}}>{v.gender==="F"?"Female":"Male"}</div>
+            <div><span style={{fontFamily:T.mono,fontSize:11,color:T.blue}}>Type {v.fitzpatrick}</span></div>
+            <div style={{fontSize:12,color:T.mid,fontFamily:T.mono}}>{v.bloodGroup}</div>
+            <div><Pill label={v.consent} color={v.consent==="Signed"?T.teal:T.amber}/></div>
+            {/* Study enrollments */}
+            <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>
+              {v.enrollments.length===0
+                ?<span style={{fontSize:10,color:T.dim}}>None</span>
+                :v.enrollments.slice(0,2).map((e,i)=><Pill key={i} label={e.study} color={pColor(e.status)}/>)
+              }
+              {v.enrollments.length>2&&<Pill label={`+${v.enrollments.length-2}`} color={T.mid}/>}
+            </div>
+          </div>);
+        })
+      }
+    </Panel>
+
+    {/* Criteria reference */}
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginTop:16}}>
+      <Panel>
+        <PHead title="Inclusion Criteria" accent={T.teal}/>
+        <div style={{padding:"14px 16px"}}>
+          {["Age 18–65, healthy skin, no active conditions","Fitzpatrick phototype III–V","Willing to provide written informed consent","No use of interfering medications in prior 2 weeks"].map(c=>(
+            <div key={c} style={{display:"flex",gap:8,padding:"6px 0",borderBottom:`1px solid ${T.border}`,fontSize:12,color:T.mid}}>
+              <span style={{color:T.teal,fontWeight:700,flexShrink:0}}>✓</span>{c}
+            </div>
+          ))}
+        </div>
+      </Panel>
+      <Panel>
+        <PHead title="Exclusion Criteria" accent={T.rose}/>
+        <div style={{padding:"14px 16px"}}>
+          {["Pregnancy, lactation, or planned pregnancy","Active dermatological infection or disease","Known hypersensitivity to test substances","Participation in another study within 30 days"].map(c=>(
+            <div key={c} style={{display:"flex",gap:8,padding:"6px 0",borderBottom:`1px solid ${T.border}`,fontSize:12,color:T.mid}}>
+              <span style={{color:T.rose,fontWeight:700,flexShrink:0}}>✗</span>{c}
+            </div>
+          ))}
+        </div>
+      </Panel>
+    </div>
+  </div>);
+};
+
+const DashboardPage=({onNav})=>{
+  const now=useClock();
+  const time=now.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false});
+  const date=now.toLocaleDateString("en-IN",{weekday:"short",day:"2-digit",month:"short",year:"numeric"});
+  const activeCount=STUDIES_DATA.filter(s=>s.status==="Active").length;
+  const totalEnrolled=STUDIES_DATA.reduce((sum,s)=>sum+s.enrolled,0);
+  const critCount=ALERTS.filter(a=>a.sev==="critical").length;
+  const warnCount=ALERTS.filter(a=>a.sev==="warning").length;
+  return(<div style={{fontFamily:"'DM Sans','Segoe UI',system-ui,sans-serif",color:T.text}}>
+    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:24}}>
+      <div>
+        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
+          <span style={{fontSize:10,fontWeight:700,color:T.teal,letterSpacing:"1.5px",textTransform:"uppercase",fontFamily:T.mono}}>C.L.A.I.M.S. PVT. LTD. · KOLDONGRI</span>
+          <div style={{display:"flex",alignItems:"center",gap:4,padding:"2px 8px",background:T.tealG,border:`1px solid ${T.teal}40`,borderRadius:20}}><div style={{width:5,height:5,borderRadius:"50%",background:T.teal,boxShadow:`0 0 6px ${T.teal}`}}/><span style={{fontSize:9,color:T.teal,fontWeight:700}}>LIVE</span></div>
+        </div>
+        <h1 style={{fontSize:22,fontWeight:800,color:T.text,margin:"0 0 4px",letterSpacing:"-0.4px"}}>Study Operations Dashboard</h1>
+        <p style={{fontSize:12,color:T.mid,margin:0}}>Patch Test Cohort · February 2026 · IS 4011:2018</p>
+      </div>
+      <div style={{display:"flex",gap:12,alignItems:"flex-start"}}>
+        <div style={{display:"flex",gap:8}}>
+          {critCount>0&&<div style={{display:"flex",alignItems:"center",gap:5,padding:"5px 11px",background:T.roseG,border:`1px solid ${T.rose}40`,borderRadius:20}}><span style={{fontSize:11}}>🚨</span><span style={{fontSize:11,color:T.rose,fontWeight:700}}>{critCount} Critical</span></div>}
+          {warnCount>0&&<div style={{display:"flex",alignItems:"center",gap:5,padding:"5px 11px",background:T.ambG,border:`1px solid ${T.amber}40`,borderRadius:20}}><span style={{fontSize:11}}>⚠</span><span style={{fontSize:11,color:T.amber,fontWeight:700}}>{warnCount} Warnings</span></div>}
+        </div>
+        <div style={{textAlign:"right"}}>
+          <div style={{fontFamily:T.mono,fontSize:18,fontWeight:700,color:T.teal,letterSpacing:"1px",lineHeight:1}}>{time}</div>
+          <div style={{fontSize:10,color:T.mid,marginTop:3}}>{date}</div>
+        </div>
+      </div>
+    </div>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(6,1fr)",gap:12,marginBottom:24}}>
+      <KpiCard label="Active Studies" value={activeCount} context="+ 2 completed this cohort" color={T.teal} icon="🧪" onClick={()=>onNav("studies")}/>
+      <KpiCard label="Enrolled Participants" value={totalEnrolled} context="Across all 5 studies" color={T.blue} icon="👥" onClick={()=>onNav("participants")}/>
+      <KpiCard label="Visit Progress" value={`${VISIT_STATS.done}/${VISIT_STATS.total}`} context={`${Math.round((VISIT_STATS.done/VISIT_STATS.total)*100)}% of scheduled visits done`} color={T.indig} icon="📅" onClick={()=>onNav("execution")}/>
+      <KpiCard label="Open Adverse Events" value={0} context="2 logged total · all resolved" color={T.teal} icon="🛡"/>
+      <KpiCard label="COAs Verified" value="5/5" context="All product batches compliant" color={T.teal} icon="🧫" onClick={()=>onNav("coa")}/>
+      <KpiCard label="PAF Deadline" value="13d" context="5 PAFs pending sponsor sign-off" color={T.amber} icon="⏳" flag={true} flagColor={T.amber} onClick={()=>onNav("accountability")}/>
+    </div>
+    <div style={{display:"grid",gridTemplateColumns:"1.4fr 1fr",gap:14}}>
+      <Panel>
+        <PHead title="Live Studies" sub="All 5 studies · click any row to open" accent={T.teal} right={<NBtn label="View all" onClick={()=>onNav("studies")}/>}/>
+        {STUDIES_DATA.map(s=><StudyRow key={s.id} s={s} onOpen={()=>onNav("studies")}/>)}
+      </Panel>
+      <Panel>
+        <PHead title="System Alerts"
+          sub={`${critCount} critical · ${warnCount} warning · ${ALERTS.filter(a=>a.sev==="info").length} info`}
+          accent={T.rose}
+          right={<NBtn label="View all" onClick={()=>onNav("alerts")}/>}
+        />
+        {/* Critical section */}
+        {ALERTS.filter(a=>a.sev==="critical").length>0&&(
+          <div>
+            <div style={{padding:"6px 16px",background:`${T.rose}10`,borderBottom:`1px solid ${T.border}`,display:"flex",alignItems:"center",gap:7}}>
+              <div style={{width:5,height:5,borderRadius:"50%",background:T.rose,boxShadow:`0 0 5px ${T.rose}`,flexShrink:0}}/>
+              <span style={{fontSize:9,fontWeight:800,color:T.rose,textTransform:"uppercase",letterSpacing:"0.8px"}}>Critical — Immediate Action Required</span>
+              <span style={{marginLeft:"auto",fontSize:9,fontWeight:700,color:T.rose,background:`${T.rose}20`,border:`1px solid ${T.rose}40`,borderRadius:10,padding:"1px 7px"}}>{ALERTS.filter(a=>a.sev==="critical").length}</span>
+            </div>
+            {ALERTS.filter(a=>a.sev==="critical").map(a=><AlertRow key={a.id} a={a} onNav={onNav} compact/>)}
+          </div>
+        )}
+        {/* Warning section */}
+        {ALERTS.filter(a=>a.sev==="warning").length>0&&(
+          <div>
+            <div style={{padding:"6px 16px",background:`${T.amber}08`,borderBottom:`1px solid ${T.border}`,borderTop:`1px solid ${T.border}`,display:"flex",alignItems:"center",gap:7}}>
+              <div style={{width:5,height:5,borderRadius:"50%",background:T.amber,flexShrink:0}}/>
+              <span style={{fontSize:9,fontWeight:800,color:T.amber,textTransform:"uppercase",letterSpacing:"0.8px"}}>Warnings — Review Soon</span>
+              <span style={{marginLeft:"auto",fontSize:9,fontWeight:700,color:T.amber,background:`${T.amber}20`,border:`1px solid ${T.amber}40`,borderRadius:10,padding:"1px 7px"}}>{ALERTS.filter(a=>a.sev==="warning").length}</span>
+            </div>
+            {ALERTS.filter(a=>a.sev==="warning").map(a=><AlertRow key={a.id} a={a} onNav={onNav} compact/>)}
+          </div>
+        )}
+        {/* Info section - just first 2 */}
+        {ALERTS.filter(a=>a.sev==="info").length>0&&(
+          <div>
+            <div style={{padding:"6px 16px",background:`${T.teal}06`,borderBottom:`1px solid ${T.border}`,borderTop:`1px solid ${T.border}`,display:"flex",alignItems:"center",gap:7}}>
+              <div style={{width:5,height:5,borderRadius:"50%",background:T.teal,flexShrink:0}}/>
+              <span style={{fontSize:9,fontWeight:800,color:T.teal,textTransform:"uppercase",letterSpacing:"0.8px"}}>Information</span>
+              <span style={{marginLeft:"auto",fontSize:9,fontWeight:700,color:T.teal,background:`${T.teal}20`,border:`1px solid ${T.teal}40`,borderRadius:10,padding:"1px 7px"}}>{ALERTS.filter(a=>a.sev==="info").length}</span>
+            </div>
+            {ALERTS.filter(a=>a.sev==="info").slice(0,2).map(a=><AlertRow key={a.id} a={a} onNav={onNav} compact/>)}
+          </div>
+        )}
+      </Panel>
+    </div>
+  </div>);
+};
+
+// ─── MODULE DATA ─────────────────────────────────────────────────────────────
+
+const COA_DATA = [
+  { batch:"PAL/AASG-E/26/001", product:"Advance Aloe Vera Sunscreen Gel", study:"CL-183", sponsor:"Pontika", mfg:"01/2026", expiry:"NAV", lab:"Anacon Labs", conclusion:"Complies", ph:"6.2", phSpec:"5.5–7.5", tpc:"<10 CFU/g", staph:"Absent", ecoli:"Absent", pseudomonas:"Absent", salmonella:"Absent", appearance:"White smooth homogeneous gel, characteristic odour", receivedDate:"02/02/2026" },
+  { batch:"MHCL/SAFW-RCPC/07/25", product:"Salicylic Acid Face Wash 2%", study:"CL-187", sponsor:"Millennium Herbal", mfg:"09/2025", expiry:"NAV", lab:"SGS India", conclusion:"Complies", ph:"5.8", phSpec:"4.5–6.5", tpc:"<10 CFU/g", staph:"Absent", ecoli:"Absent", pseudomonas:"Absent", salmonella:"Absent", appearance:"Clear gel, characteristic odour", receivedDate:"02/02/2026" },
+  { batch:"HC-126-01", product:"Barrier Repair Hand Cream", study:"CL-188", sponsor:"Earthy Biome", mfg:"20/01/2026", expiry:"31/12/2027", lab:"Eurofins", conclusion:"Complies", ph:"6.5", phSpec:"6.0–7.0", tpc:"<10 CFU/g", staph:"Absent", ecoli:"Absent", pseudomonas:"Absent", salmonella:"Absent", appearance:"White smooth cream, mild characteristic odour", receivedDate:"02/02/2026" },
+  { batch:"TRI-01 / TRI-02 / TRI-03 / TRI-04 / TRI-05", product:"Presto! Hand Wash — 5 Variants", study:"CL-190", sponsor:"Bjain Pharma", mfg:"12/2025", expiry:"12/2027", lab:"Anacon Labs", conclusion:"Complies", ph:"6.8", phSpec:"6.0–8.0", tpc:"<10 CFU/g", staph:"Absent", ecoli:"Absent", pseudomonas:"Absent", salmonella:"Absent", appearance:"Clear liquid, variant-specific colour", receivedDate:"03/02/2026" },
+  { batch:"B0401262M9 / B1701262M9", product:"Baby Diaper Pants S/M/L/XL", study:"CL-191", sponsor:"Swara Baby", mfg:"01/2026", expiry:"NAV", lab:"NABL Accredited Lab", conclusion:"Complies", ph:"—", phSpec:"—", tpc:"—", staph:"Absent", ecoli:"Absent", pseudomonas:"Absent", salmonella:"Absent", appearance:"White absorbent pad, non-woven outer cover", receivedDate:"03/02/2026" },
+];
+
+const EXEC_LOGS_DATA = [
+  { id:"LOG-001", type:"application", study:"CL-183", participant:"V-001", event:"Patch Application — V1", zone:"Upper Back - Left", batch:"PAL/AASG-E/26/001", by:"Priya Singh", datetime:"04/02/2026 09:00" },
+  { id:"LOG-002", type:"application", study:"CL-183", participant:"V-002", event:"Patch Application — V1", zone:"Upper Back - Right", batch:"PAL/AASG-E/26/001", by:"Priya Singh", datetime:"04/02/2026 09:15" },
+  { id:"LOG-003", type:"removal",     study:"CL-183", participant:"V-001", event:"Patch Removal — V2", zone:"Upper Back - Left", batch:"PAL/AASG-E/26/001", by:"Ms. Swati Jaiswar", datetime:"05/02/2026 09:05", earlyRemoval:false },
+  { id:"LOG-004", type:"removal",     study:"CL-183", participant:"V-002", event:"Patch Removal — V2", zone:"Upper Back - Right", batch:"PAL/AASG-E/26/001", by:"Ms. Swati Jaiswar", datetime:"05/02/2026 09:20", earlyRemoval:false },
+  { id:"LOG-005", type:"score",       study:"CL-183", participant:"V-001", event:"Draize Scoring — V3", zone:"Upper Back - Left", batch:"PAL/AASG-E/26/001", by:"Dr. R. Mehta", datetime:"06/02/2026 09:00", erythema:0, dryness:0, oedema:0, total:0 },
+  { id:"LOG-006", type:"score",       study:"CL-183", participant:"V-002", event:"Draize Scoring — V3", zone:"Upper Back - Right", batch:"PAL/AASG-E/26/001", by:"Dr. R. Mehta", datetime:"06/02/2026 09:10", erythema:0, dryness:0, oedema:0, total:0 },
+  { id:"LOG-007", type:"application", study:"CL-188", participant:"V-008", event:"Patch Application — V1", zone:"Forearm - Left", batch:"HC-126-01", by:"Priya Singh", datetime:"04/02/2026 10:00" },
+  { id:"LOG-008", type:"removal",     study:"CL-188", participant:"V-008", event:"Patch Removal — V2", zone:"Forearm - Left", batch:"HC-126-01", by:"Ms. Swati Jaiswar", datetime:"05/02/2026 10:05", earlyRemoval:false },
+  { id:"LOG-009", type:"application", study:"CL-190", participant:"V-011", event:"Patch Application — V1", zone:"Upper Back - Centre", batch:"TRI-01", by:"Priya Singh", datetime:"04/02/2026 11:00" },
+  { id:"LOG-010", type:"score",       study:"CL-190", participant:"V-012", event:"Draize Scoring — V3", zone:"Upper Back - Left", batch:"TRI-02", by:"Dr. R. Mehta", datetime:"06/02/2026 10:30", erythema:1, dryness:0, oedema:0, total:1 },
+];
+
+const AE_DATA = [
+  { id:"AE-001", study:"CL-183", participant:"V-003", date:"05/02/2026", time:"14:30", desc:"Mild erythema at patch application site on upper back", severity:"Mild", serious:false, causality:"Probable", action:"Topical soothing cream (calamine) applied to site. Patch removed early at participant request.", resolved:true, resolvedDate:"07/02/2026", reportedBy:"Priya Singh", reviewedBy:"Dr. R. Mehta", sponsorNotified:true, notifiedDate:"05/02/2026" },
+  { id:"AE-002", study:"CL-190", participant:"V-012", date:"05/02/2026", time:"16:00", desc:"Slight pruritus and localised warmth at patch site — back panel 3", severity:"Mild", serious:false, causality:"Possible", action:"Patch removed 2 hours early. Site monitored every 30 mins for 2 hours. No further intervention needed.", resolved:true, resolvedDate:"06/02/2026", reportedBy:"Ms. Swati Jaiswar", reviewedBy:"Dr. R. Mehta", sponsorNotified:true, notifiedDate:"05/02/2026" },
+];
+
+const ACCOUNTABILITY_DATA = [
+  { study:"CL-183", sponsor:"Pontika", batch:"PAL/AASG-E/26/001", product:"Advance Aloe Vera Sunscreen Gel", received:2, used:1, remaining:1, archived:1, archivedType:"Unused", disposition:"Pending Sponsor Return", prepBy:"Priya Singh", checkBy:"Ms. Swati Jaiswar", date:"13/02/2026", valid:true },
+  { study:"CL-187", sponsor:"Millennium Herbal", batch:"MHCL/SAFW-RCPC/07/25", product:"Salicylic Acid Face Wash 2%", received:1, used:1, remaining:0, archived:1, archivedType:"Used (empty)", disposition:"Pending Sponsor Return", prepBy:"Priya Singh", checkBy:"Ms. Swati Jaiswar", date:"13/02/2026", valid:true },
+  { study:"CL-188", sponsor:"Earthy Biome", batch:"HC-126-01", product:"Barrier Repair Hand Cream", received:3, used:2, remaining:1, archived:1, archivedType:"Unused", disposition:"Pending Sponsor Return", prepBy:"Priya Singh", checkBy:"Ms. Swati Jaiswar", date:"13/02/2026", valid:true },
+  { study:"CL-190", sponsor:"Bjain Pharma", batch:"TRI-01 to TRI-05", product:"Presto! Hand Wash — 5 Variants", received:10, used:8, remaining:2, archived:2, archivedType:"Unused", disposition:"Pending Sponsor Return", prepBy:"Priya Singh", checkBy:"Ms. Swati Jaiswar", date:"13/02/2026", valid:true },
+  { study:"CL-191", sponsor:"Swara Baby", batch:"B0401262M9", product:"Baby Diaper Pants — S/M", received:10, used:2, remaining:8, archived:1, archivedType:"Unused", disposition:"Pending Sponsor Return", prepBy:"Priya Singh", checkBy:"Ms. Swati Jaiswar", date:"13/02/2026", valid:true },
+];
+
+const AUDIT_DATA = [
+  { id:"AUD-0091", obj:"ProductAccountability", field:"qty_used",        old:"0",       new:"1",        by:"Priya Singh",       at:"13/02/2026 14:22", reason:"Corrected after physical recount of archived samples" },
+  { id:"AUD-0090", obj:"SkinScore",             field:"erythema_score",  old:"1",       new:"0",        by:"Dr. R. Mehta",      at:"06/02/2026 10:15", reason:"Re-evaluated under standardised lighting conditions" },
+  { id:"AUD-0089", obj:"Participant",           field:"status",          old:"Active",  new:"Withdrawn",by:"Priya Singh",       at:"05/02/2026 15:00", reason:"Participant voluntarily withdrew consent — documented" },
+  { id:"AUD-0088", obj:"COA",                   field:"conclusion",      old:"Pending", new:"Complies", by:"Admin",             at:"03/02/2026 11:00", reason:"Lab report received, reviewed, and verified by PI" },
+  { id:"AUD-0087", obj:"Study",                 field:"status",          old:"Setup",   new:"Active",   by:"Dr. R. Mehta",      at:"04/02/2026 08:45", reason:"All pre-study checks passed — protocol approved" },
+  { id:"AUD-0086", obj:"ConsentRecord",         field:"consent_signed",  old:"false",   new:"true",     by:"Priya Singh",       at:"04/02/2026 08:30", reason:"Participant signed ICP witnessed by coordinator" },
+  { id:"AUD-0085", obj:"AdverseEvent",          field:"causality",       old:"Possible","new":"Probable",by:"Dr. R. Mehta",     at:"06/02/2026 11:30", reason:"Upgraded on PI clinical review post-score analysis" },
+  { id:"AUD-0084", obj:"Participant",           field:"screening",       old:"Pending", new:"Failed",   by:"Priya Singh",       at:"03/02/2026 16:00", reason:"Failed skin assessment — active dermatitis noted" },
+  { id:"AUD-0083", obj:"Study",                 field:"enrolled",        old:"17",      new:"18",       by:"Priya Singh",       at:"04/02/2026 09:00", reason:"New participant registered and consented" },
+  { id:"AUD-0082", obj:"COA",                   field:"batch_number",    old:"TRI-00",  new:"TRI-01",   by:"Admin",             at:"02/02/2026 14:00", reason:"Corrected transcription error from sponsor document" },
+];
+
+// ─── PRODUCT & COA PAGE ───────────────────────────────────────────────────────
+const COAPage=()=>{
+  const[selected,setSelected]=useState(null);
+  const coa=selected?COA_DATA.find(c=>c.batch===selected):null;
+
+  if(coa){
+    const navFail=coa.expiry==="NAV";
+    return(<div>
+      <button onClick={()=>setSelected(null)} style={{background:"none",border:"none",color:T.teal,fontSize:13,fontWeight:700,cursor:"pointer",padding:0,marginBottom:20}}>← Back to COA Registry</button>
+      <div style={{background:T.s1,border:`1px solid ${T.teal}33`,borderRadius:12,padding:"22px 26px",marginBottom:18,position:"relative",overflow:"hidden"}}>
+        <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:`linear-gradient(90deg,${T.teal},${T.blue} 60%,transparent)`}}/>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:16,flexWrap:"wrap"}}>
+          <div>
+            <div style={{fontFamily:T.mono,fontSize:11,color:T.teal,marginBottom:6}}>{coa.study} · {coa.sponsor}</div>
+            <h2 style={{fontSize:18,fontWeight:800,color:T.text,margin:"0 0 6px"}}>{coa.product}</h2>
+            <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+              <Pill label={coa.conclusion} color={T.teal}/>
+              <Pill label={`Lab: ${coa.lab}`} color={T.blue}/>
+              {navFail&&<Pill label="Expiry NAV — Verify" color={T.amber}/>}
+            </div>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,minWidth:340}}>
+            {[["Batch Number",coa.batch,true],["Received",coa.receivedDate,false],["Mfg Date",coa.mfg,false],["Expiry Date",navFail?"Not Available":coa.expiry,false],["Lab / Issuer",coa.lab,false],["Conclusion",coa.conclusion,false]].map(([k,v,mono])=>(
+              <div key={k} style={{background:T.s2,borderRadius:7,padding:"10px 12px"}}>
+                <div style={{fontSize:9,fontWeight:700,color:T.dim,textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:4}}>{k}</div>
+                <div style={{fontSize:12,fontWeight:600,color:k==="Conclusion"?T.teal:k==="Expiry Date"&&navFail?T.amber:T.text,fontFamily:mono?T.mono:"inherit"}}>{v}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      <Panel>
+        <PHead title="Test Parameters" sub="All parameters tested against IS 4011:2018 specifications" accent={T.teal}/>
+        <div style={{overflowX:"auto"}}>
+          <table style={{width:"100%",borderCollapse:"collapse"}}>
+            <thead><tr style={{background:T.s2}}>{["Parameter","Category","Specification","Result","Status"].map(h=><th key={h} style={{padding:"10px 16px",textAlign:"left",fontSize:10,fontWeight:700,color:T.mid,letterSpacing:"0.6px",textTransform:"uppercase",borderBottom:`1px solid ${T.border}`,whiteSpace:"nowrap"}}>{h}</th>)}</tr></thead>
+            <tbody>
+              {[
+                ["Appearance","Physical","Characteristic",coa.appearance,"Complies"],
+                ["pH","Chemical",coa.phSpec||"—",coa.ph||"—","Complies"],
+                ["Total Plate Count","Microbiology","< 100 CFU/g",coa.tpc,"Complies"],
+                ["Staphylococcus aureus","Microbiology","Absent",coa.staph,"Complies"],
+                ["Escherichia coli","Microbiology","Absent",coa.ecoli,"Complies"],
+                ["Pseudomonas aeruginosa","Microbiology","Absent",coa.pseudomonas,"Complies"],
+                ["Salmonella spp.","Microbiology","Absent",coa.salmonella,"Complies"],
+              ].map(([param,cat,spec,result,status],i)=>(
+                <tr key={param} style={{background:i%2===0?"transparent":T.s0,transition:"background 0.1s"}} onMouseEnter={e=>e.currentTarget.style.background=T.s2} onMouseLeave={e=>e.currentTarget.style.background=i%2===0?"transparent":T.s0}>
+                  <td style={{padding:"11px 16px",fontSize:13,fontWeight:600,color:T.text,borderBottom:`1px solid ${T.border}`}}>{param}</td>
+                  <td style={{padding:"11px 16px",borderBottom:`1px solid ${T.border}`}}><Pill label={cat} color={cat==="Microbiology"?T.blue:cat==="Chemical"?T.indig:T.mid}/></td>
+                  <td style={{padding:"11px 16px",fontSize:12,fontFamily:T.mono,color:T.mid,borderBottom:`1px solid ${T.border}`}}>{spec}</td>
+                  <td style={{padding:"11px 16px",fontSize:12,fontFamily:T.mono,color:T.text,borderBottom:`1px solid ${T.border}`,maxWidth:200}}>{result}</td>
+                  <td style={{padding:"11px 16px",borderBottom:`1px solid ${T.border}`}}><Pill label={status} color={T.teal}/></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Panel>
+      {navFail&&<div style={{marginTop:14,padding:"12px 16px",background:T.ambG,border:`1px solid ${T.amber}40`,borderRadius:8,fontSize:13,color:T.amber,fontWeight:500}}>⚠ Expiry date marked <strong>NAV (Not Available)</strong>. Contact sponsor for shelf-life documentation before study closure or sample destruction.</div>}
+    </div>);
+  }
+
+  const navCount=COA_DATA.filter(c=>c.expiry==="NAV").length;
+  return(<div>
+    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:18}}>
+      <div>
+        <h2 style={{fontSize:20,fontWeight:800,color:T.text,margin:"0 0 4px"}}>Product & COA Registry</h2>
+        <p style={{fontSize:12,color:T.mid,margin:0}}>Certificate of Analysis for all product batches · all must comply before use</p>
+      </div>
+    </div>
+    <InlineBanner sev="critical" icon="🧪" title={`${navCount} batch${navCount>1?"es":""} have no expiry date on file`} body="PAL/AASG-E/26/001, MHCL/SAFW-RCPC/07/25, B0401262M9 — sponsor must confirm shelf-life before study closure or sample destruction."/>
+    <InlineBanner sev="info" icon="✅" title="All 5 COAs verified — no failures" body="Every product batch complies across all physical, chemical, and microbiological parameters per IS 4011:2018."/>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:20}}>
+      {[["Total Batches",COA_DATA.length,T.blue,"🧫"],["COA Verified",COA_DATA.length,T.teal,"✅"],["All Compliant",COA_DATA.filter(c=>c.conclusion==="Complies").length,T.teal,"🔬"],["Expiry NAV",navCount,navCount>0?T.amber:T.mid,"📅"]].map(([label,n,color,icon])=>(
+        <div key={label} style={{background:T.s1,border:`1px solid ${T.border}`,borderRadius:10,padding:"14px 16px",position:"relative",overflow:"hidden"}}>
+          <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:`linear-gradient(90deg,${color},transparent 70%)`}}/>
+          <div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}><span style={{fontSize:10,color:T.mid,fontWeight:500}}>{label}</span><span style={{fontSize:14,opacity:0.7}}>{icon}</span></div>
+          <div style={{fontSize:26,fontWeight:800,color,fontFamily:"Georgia,serif"}}>{n}</div>
+        </div>
+      ))}
+    </div>
+    <Panel>
+      <PHead title="All Product Batches" sub="Click any row to view full COA" accent={T.teal}
+        right={navCount>0?<Pill label={`${navCount} expiry NAV — verify`} color={T.amber}/>:null}
+      />
+      <div style={{background:T.s2,padding:"8px 16px",borderBottom:`1px solid ${T.border}`,display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr 1fr 1fr 100px 80px",gap:12}}>
+        {["Product / Batch","Study","Lab","Mfg Date","Expiry","pH","Conclusion",""].map(h=><span key={h} style={{fontSize:9,fontWeight:700,color:T.dim,textTransform:"uppercase",letterSpacing:"0.5px"}}>{h}</span>)}
+      </div>
+      {COA_DATA.map((c,i)=>(
+        <div key={i} onClick={()=>setSelected(c.batch)} style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr 1fr 1fr 100px 80px",gap:12,padding:"13px 16px",borderBottom:`1px solid ${T.border}`,cursor:"pointer",alignItems:"center",transition:"background 0.15s"}} onMouseEnter={e=>e.currentTarget.style.background=T.s2} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+          <div>
+            <div style={{fontSize:13,fontWeight:600,color:T.text}}>{c.product}</div>
+            <div style={{fontFamily:T.mono,fontSize:10,color:T.teal,marginTop:2}}>{c.batch}</div>
+          </div>
+          <div style={{fontFamily:T.mono,fontSize:11,color:T.blue}}>{c.study}</div>
+          <div style={{fontSize:12,color:T.mid}}>{c.lab}</div>
+          <div style={{fontSize:12,color:T.mid}}>{c.mfg}</div>
+          <div style={{fontSize:12,color:c.expiry==="NAV"?T.amber:T.mid,fontWeight:c.expiry==="NAV"?600:400}}>{c.expiry==="NAV"?"⚠ NAV":c.expiry}</div>
+          <div style={{fontFamily:T.mono,fontSize:12,color:T.text}}>{c.ph||"—"}</div>
+          <Pill label={c.conclusion} color={T.teal}/>
+          <span style={{fontSize:12,color:T.teal,fontWeight:700,cursor:"pointer"}}>View →</span>
+        </div>
+      ))}
+    </Panel>
+    {navCount>0&&<div style={{marginTop:14,padding:"12px 16px",background:T.ambG,border:`1px solid ${T.amber}40`,borderRadius:8,fontSize:13,color:T.amber}}><strong>{navCount} batch{navCount>1?"es":""}</strong> have no expiry date on file. Manual verification with sponsor required before study closure.</div>}
+  </div>);
+};
+
+// ─── EXECUTION LOGS PAGE ──────────────────────────────────────────────────────
+const ExecutionPage=()=>{
+  const[typeFilter,setTypeFilter]=useState("all");
+  const[studyFilter,setStudyFilter]=useState("ALL");
+
+  const filtered=EXEC_LOGS_DATA.filter(l=>{
+    if(typeFilter!=="all"&&l.type!==typeFilter) return false;
+    if(studyFilter!=="ALL"&&l.study!==studyFilter) return false;
+    return true;
+  });
+
+  const typeColor=t=>t==="application"?T.teal:t==="removal"?T.blue:T.indig;
+  const typeIcon=t=>t==="application"?"📋":t==="removal"?"🩹":"📊";
+  const typeLabel=t=>t==="application"?"Application":t==="removal"?"Removal":"Skin Score";
+
+  const apps=EXEC_LOGS_DATA.filter(l=>l.type==="application").length;
+  const rems=EXEC_LOGS_DATA.filter(l=>l.type==="removal").length;
+  const scores=EXEC_LOGS_DATA.filter(l=>l.type==="score").length;
+
+  return(<div>
+    <div style={{marginBottom:22}}>
+      <h2 style={{fontSize:20,fontWeight:800,color:T.text,margin:"0 0 4px"}}>Execution Logs</h2>
+      <p style={{fontSize:12,color:T.mid,margin:0}}>Patch application, removal, and Draize scoring records · IS 4011:2018</p>
+    </div>
+    <InlineBanner sev="critical" icon="⚠" title="Visit window breach — V-008 (CL-188)" body="V3 scoring was due by 06/02/2026 09:00. The 48-hour window has been exceeded. PI sign-off and deviation note required."/>
+    <InlineBanner sev="warning" icon="📊" title="3 participants pending V3 scoring in CL-188" body="V2 removal complete but Draize scoring not yet logged. PI availability must be confirmed before the window closes."/>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:20}}>
+      {[["Total Events",EXEC_LOGS_DATA.length,T.blue,"📋"],["Applications",apps,T.teal,"📋"],["Removals",rems,T.blue,"🩹"],["Skin Scores",scores,T.indig,"📊"]].map(([label,n,color,icon])=>(
+        <div key={label} style={{background:T.s1,border:`1px solid ${T.border}`,borderRadius:10,padding:"14px 16px",position:"relative",overflow:"hidden"}}>
+          <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:`linear-gradient(90deg,${color},transparent 70%)`}}/>
+          <div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}><span style={{fontSize:10,color:T.mid,fontWeight:500}}>{label}</span><span style={{fontSize:14,opacity:0.7}}>{icon}</span></div>
+          <div style={{fontSize:26,fontWeight:800,color,fontFamily:"Georgia,serif"}}>{n}</div>
+        </div>
+      ))}
+    </div>
+    <div style={{display:"flex",gap:10,marginBottom:18,flexWrap:"wrap",alignItems:"center"}}>
+      <div style={{display:"flex",gap:6}}>
+        {[["all","All Events"],["application","Applications"],["removal","Removals"],["score","Skin Scores"]].map(([val,label])=>(
+          <button key={val} onClick={()=>setTypeFilter(val)} style={{padding:"7px 14px",borderRadius:7,border:`1px solid ${typeFilter===val?T.teal:T.border}`,background:typeFilter===val?T.tealG:"transparent",color:typeFilter===val?T.teal:T.mid,fontSize:12,fontWeight:typeFilter===val?700:400,cursor:"pointer"}}>{label}</button>
+        ))}
+      </div>
+      <select value={studyFilter} onChange={e=>setStudyFilter(e.target.value)} style={{background:T.s2,border:`1px solid ${T.border}`,borderRadius:7,padding:"7px 12px",fontSize:12,color:T.text,outline:"none",cursor:"pointer"}}>
+        <option value="ALL">All Studies</option>
+        {STUDIES_DATA.map(s=><option key={s.id} value={s.id}>{s.id}</option>)}
+      </select>
+      <span style={{fontSize:11,color:T.dim,marginLeft:"auto"}}>{filtered.length} events</span>
+    </div>
+    <div style={{display:"flex",flexDirection:"column",gap:10}}>
+      {filtered.map((log,i)=>{
+        const color=typeColor(log.type);
+        return(<div key={log.id} style={{display:"flex",gap:14,alignItems:"flex-start"}}>
+          <div style={{display:"flex",flexDirection:"column",alignItems:"center",flexShrink:0}}>
+            <div style={{width:38,height:38,borderRadius:"50%",background:`${color}22`,border:`1.5px solid ${color}55`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,flexShrink:0}}>{typeIcon(log.type)}</div>
+            {i<filtered.length-1&&<div style={{width:2,flex:1,background:T.border,margin:"4px 0",minHeight:12}}/>}
+          </div>
+          <div style={{flex:1,background:T.s1,border:`1px solid ${T.border}`,borderRadius:10,padding:"14px 16px",marginBottom:0}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:8}}>
+              <div>
+                <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:6,flexWrap:"wrap"}}>
+                  <Pill label={typeLabel(log.type)} color={color}/>
+                  <span style={{fontFamily:T.mono,fontSize:10,color:T.dim}}>{log.id}</span>
+                  <span style={{fontFamily:T.mono,fontSize:10,color:T.blue}}>{log.study}</span>
+                </div>
+                <div style={{fontSize:14,fontWeight:700,color:T.text,marginBottom:4}}>{log.event}</div>
+                <div style={{fontSize:12,color:T.mid}}>Participant: <strong style={{color:T.text}}>{log.participant}</strong> · Zone: <strong style={{color:T.text}}>{log.zone}</strong> · By: <strong style={{color:T.text}}>{log.by}</strong></div>
+                <div style={{fontFamily:T.mono,fontSize:11,color:T.dim,marginTop:4}}>Batch: {log.batch}</div>
+                {log.type==="removal"&&log.earlyRemoval&&<div style={{marginTop:6}}><Pill label="Early Removal" color={T.amber}/></div>}
+              </div>
+              <div style={{textAlign:"right",flexShrink:0}}>
+                <div style={{fontSize:12,color:T.mid}}>{log.datetime}</div>
+                {log.type==="score"&&(
+                  <div style={{display:"flex",gap:8,marginTop:10,justifyContent:"flex-end"}}>
+                    {[["E",log.erythema,4],["D",log.dryness,2],["O",log.oedema,4],["∑",log.total,10]].map(([lbl,val,max])=>{
+                      const c=val===0?T.teal:val<=1?T.amber:T.rose;
+                      return(<div key={lbl} style={{textAlign:"center"}}>
+                        <div style={{width:34,height:34,borderRadius:7,background:`${c}22`,border:`1.5px solid ${c}44`,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:14,color:c,fontFamily:T.mono}}>{val}</div>
+                        <div style={{fontSize:9,color:T.dim,marginTop:3,fontWeight:700}}>{lbl}</div>
+                      </div>);
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>);
+      })}
+    </div>
+    <Panel style={{marginTop:16}}>
+      <PHead title="Draize Score Reference" accent={T.indig}/>
+      <div style={{padding:"14px 16px",display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12}}>
+        {[["≤ 2.0","Non-Irritant",T.teal],["2.1 – 4.0","Mildly Irritant",T.amber],["> 4.0","Irritant",T.rose]].map(([range,label,color])=>(
+          <div key={label} style={{background:`${color}10`,border:`1px solid ${color}33`,borderRadius:8,padding:"14px",textAlign:"center"}}>
+            <div style={{fontSize:20,fontWeight:800,color,fontFamily:T.mono,marginBottom:4}}>{range}</div>
+            <div style={{fontSize:12,color,fontWeight:700}}>{label}</div>
+          </div>
+        ))}
+      </div>
+    </Panel>
+  </div>);
+};
+
+// ─── ADVERSE EVENTS PAGE ──────────────────────────────────────────────────────
+const AdverseEventsPage=()=>{
+  const[selected,setSelected]=useState(null);
+  const ae=selected?AE_DATA.find(a=>a.id===selected):null;
+
+  if(ae){
+    const sevColor=ae.severity==="Mild"?T.amber:ae.severity==="Moderate"?T.rose:T.rose;
+    return(<div>
+      <button onClick={()=>setSelected(null)} style={{background:"none",border:"none",color:T.teal,fontSize:13,fontWeight:700,cursor:"pointer",padding:0,marginBottom:20}}>← Back to AE Register</button>
+      <div style={{background:T.s1,border:`1px solid ${sevColor}44`,borderRadius:12,padding:"22px 26px",marginBottom:18,position:"relative",overflow:"hidden"}}>
+        <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:`linear-gradient(90deg,${sevColor},transparent 60%)`}}/>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:16,flexWrap:"wrap"}}>
+          <div>
+            <div style={{display:"flex",gap:8,marginBottom:8,flexWrap:"wrap"}}>
+              <span style={{fontFamily:T.mono,fontSize:12,color:T.rose,fontWeight:700}}>{ae.id}</span>
+              <Pill label={ae.severity} color={sevColor}/>
+              <Pill label={ae.serious?"Serious":"Non-Serious"} color={ae.serious?T.rose:T.teal}/>
+              <Pill label={ae.resolved?"Resolved":"Open"} color={ae.resolved?T.teal:T.rose}/>
+            </div>
+            <div style={{fontSize:16,fontWeight:700,color:T.text,marginBottom:6}}>{ae.desc}</div>
+            <div style={{fontSize:12,color:T.mid}}>Study: <strong style={{color:T.text}}>{ae.study}</strong> · Participant: <strong style={{color:T.text}}>{ae.participant}</strong> · {ae.date} {ae.time}</div>
+          </div>
+        </div>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:14}}>
+        <Panel><PHead title="Causality & Action" accent={sevColor}/>
+          <div style={{padding:"14px 16px",display:"flex",flexDirection:"column",gap:10}}>
+            {[["Causality Assessment",ae.causality],["Action Taken",ae.action],["Reported By",ae.reportedBy],["Reviewed By (PI)",ae.reviewedBy]].map(([k,v])=>(
+              <div key={k} style={{background:T.s2,borderRadius:7,padding:"10px 12px"}}>
+                <div style={{fontSize:9,fontWeight:700,color:T.dim,textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:4}}>{k}</div>
+                <div style={{fontSize:13,color:T.text,lineHeight:1.5}}>{v}</div>
+              </div>
+            ))}
+          </div>
+        </Panel>
+        <Panel><PHead title="Resolution & Reporting" accent={T.teal}/>
+          <div style={{padding:"14px 16px",display:"flex",flexDirection:"column",gap:10}}>
+            {[["Resolution Status",ae.resolved?"Resolved":"Open"],["Resolution Date",ae.resolvedDate||"—"],["Sponsor Notified",ae.sponsorNotified?"Yes":"No"],["Notification Date",ae.notifiedDate||"—"]].map(([k,v])=>(
+              <div key={k} style={{background:T.s2,borderRadius:7,padding:"10px 12px"}}>
+                <div style={{fontSize:9,fontWeight:700,color:T.dim,textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:4}}>{k}</div>
+                <div style={{fontSize:13,fontWeight:600,color:v==="Yes"||v==="Resolved"?T.teal:v==="No"||v==="Open"?T.rose:T.text}}>{v}</div>
+              </div>
+            ))}
+          </div>
+        </Panel>
+      </div>
+    </div>);
+  }
+
+  const openAEs=AE_DATA.filter(a=>!a.resolved).length;
+  const seriousAEs=AE_DATA.filter(a=>a.serious).length;
+  return(<div>
+    <div style={{marginBottom:22}}>
+      <h2 style={{fontSize:20,fontWeight:800,color:T.text,margin:"0 0 4px"}}>Adverse Event Register</h2>
+      <p style={{fontSize:12,color:T.mid,margin:0}}>AE capture, severity grading, causality assessment, and sponsor reporting</p>
+    </div>
+    <InlineBanner sev="warning" icon="📋" title="AE-001 causality upgraded — sponsor letter may need revision" body="Erythema on V-003 (CL-183) upgraded from Possible to Probable by PI on 06/02/2026. Review the sponsor notification already sent."/>
+    <InlineBanner sev="info" icon="🛡️" title="No serious adverse events recorded" body="All 2 AEs classified as Mild, non-serious, and fully resolved. No IEC notification required under current classification."/>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:20}}>
+      {[["Total AEs",AE_DATA.length,T.amber,"⚠️"],["Serious AEs",seriousAEs,seriousAEs>0?T.rose:T.teal,"🛡️"],["Open AEs",openAEs,openAEs>0?T.rose:T.teal,"📋"],["Sponsor Notified",AE_DATA.filter(a=>a.sponsorNotified).length,T.teal,"📤"]].map(([label,n,color,icon])=>(
+        <div key={label} style={{background:T.s1,border:`1px solid ${T.border}`,borderRadius:10,padding:"14px 16px",position:"relative",overflow:"hidden"}}>
+          <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:`linear-gradient(90deg,${color},transparent 70%)`}}/>
+          <div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}><span style={{fontSize:10,color:T.mid,fontWeight:500}}>{label}</span><span style={{fontSize:14,opacity:0.7}}>{icon}</span></div>
+          <div style={{fontSize:26,fontWeight:800,color,fontFamily:"Georgia,serif"}}>{n}</div>
+        </div>
+      ))}
+    </div>
+    {AE_DATA.map((ae)=>{
+      const sevColor=ae.severity==="Mild"?T.amber:T.rose;
+      return(<div key={ae.id} onClick={()=>setSelected(ae.id)} style={{background:T.s1,border:`1px solid ${T.border}`,borderLeft:`4px solid ${sevColor}`,borderRadius:10,padding:"16px 18px",marginBottom:12,cursor:"pointer",transition:"background 0.15s"}} onMouseEnter={e=>e.currentTarget.style.background=T.s2} onMouseLeave={e=>e.currentTarget.style.background=T.s1}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:10}}>
+          <div>
+            <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:6,flexWrap:"wrap"}}>
+              <span style={{fontFamily:T.mono,fontSize:11,color:T.rose,fontWeight:700}}>{ae.id}</span>
+              <Pill label={ae.severity} color={sevColor}/>
+              <Pill label={ae.serious?"Serious":"Non-Serious"} color={ae.serious?T.rose:T.teal}/>
+              <Pill label={ae.resolved?"Resolved":"Open"} color={ae.resolved?T.teal:T.rose}/>
+            </div>
+            <div style={{fontSize:14,fontWeight:700,color:T.text,marginBottom:4}}>{ae.desc}</div>
+            <div style={{fontSize:12,color:T.mid}}>Study <strong style={{color:T.text}}>{ae.study}</strong> · Participant <strong style={{color:T.text}}>{ae.participant}</strong> · {ae.date} {ae.time}</div>
+            <div style={{fontSize:12,color:T.mid,marginTop:4}}>Causality: <strong style={{color:T.text}}>{ae.causality}</strong> · By: {ae.reportedBy}</div>
+          </div>
+          <span style={{fontSize:12,color:T.teal,fontWeight:700}}>View →</span>
+        </div>
+      </div>);
+    })}
+    <Panel style={{marginTop:4}}>
+      <PHead title="Reporting Rules — IS 4011:2018" accent={T.rose}/>
+      <div style={{padding:"14px 16px",display:"flex",flexDirection:"column",gap:6}}>
+        {["Serious AEs must be reported to Sponsor and IEC within 24 hours of occurrence","All AEs regardless of causality must be captured, graded, and followed to resolution","Unresolved AEs at study close require V4 (1-week follow-up) visit to be scheduled","All AE forms must be co-signed by Coordinator and Principal Investigator"].map(r=>(
+          <div key={r} style={{fontSize:12,color:T.mid,padding:"6px 0",borderBottom:`1px solid ${T.border}`,display:"flex",gap:8}}>
+            <span style={{color:T.rose,fontWeight:700,flexShrink:0}}>·</span>{r}
+          </div>
+        ))}
+      </div>
+    </Panel>
+  </div>);
+};
+
+// ─── ACCOUNTABILITY PAGE ──────────────────────────────────────────────────────
+const AccountabilityPage=()=>{
+  const[selected,setSelected]=useState(null);
+  const rec=selected?ACCOUNTABILITY_DATA.find(a=>a.study===selected):null;
+
+  if(rec){
+    const balance=rec.received===rec.used+rec.remaining;
+    return(<div>
+      <button onClick={()=>setSelected(null)} style={{background:"none",border:"none",color:T.teal,fontSize:13,fontWeight:700,cursor:"pointer",padding:0,marginBottom:20}}>← Back to Accountability Register</button>
+      <div style={{background:T.s1,border:`1px solid ${T.teal}33`,borderRadius:12,padding:"22px 26px",marginBottom:18,position:"relative",overflow:"hidden"}}>
+        <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:`linear-gradient(90deg,${T.teal},${T.blue} 60%,transparent)`}}/>
+        <div style={{fontSize:13,fontWeight:700,color:T.teal,marginBottom:4}}>Product Accountability Form — {rec.study}</div>
+        <h2 style={{fontSize:18,fontWeight:800,color:T.text,margin:"0 0 4px"}}>{rec.product}</h2>
+        <div style={{fontSize:12,color:T.mid,marginBottom:10}}>{rec.sponsor} · Batch: <span style={{fontFamily:T.mono,color:T.text}}>{rec.batch}</span></div>
+        <Pill label={rec.disposition} color={T.amber}/>
+      </div>
+      <Panel style={{marginBottom:14}}>
+        <PHead title="Quantity Reconciliation" accent={T.teal}/>
+        <div style={{padding:"18px",display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:14,marginBottom:16}}>
+          {[["Received at Site",rec.received,T.blue],["Used by Volunteers",rec.used,T.indig],["Qty Remaining",rec.remaining,T.amber],["Qty Archived",rec.archived,T.teal]].map(([label,n,color])=>(
+            <div key={label} style={{textAlign:"center",background:T.s2,borderRadius:10,padding:"18px 14px"}}>
+              <div style={{fontSize:36,fontWeight:800,color,fontFamily:"Georgia,serif",lineHeight:1}}>{n}</div>
+              <div style={{fontSize:11,color:T.mid,marginTop:6}}>{label}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{margin:"0 18px 18px",padding:"12px 16px",borderRadius:8,background:balance?T.tealG:T.roseG,border:`1px solid ${balance?T.teal:T.rose}44`,color:balance?T.teal:T.rose,fontSize:13,fontWeight:600}}>
+          {balance?`✓ Validated: ${rec.received} received = ${rec.used} used + ${rec.remaining} remaining`:`✗ Mismatch: ${rec.received} received ≠ ${rec.used} used + ${rec.remaining} remaining — review required`}
+        </div>
+      </Panel>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
+        <Panel><PHead title="Archival Details" accent={T.blue}/>
+          <div style={{padding:"14px 16px",display:"flex",flexDirection:"column",gap:8}}>
+            {[["Archived Qty",rec.archived],["Archived Type",rec.archivedType],["PAF Date",rec.date]].map(([k,v])=>(
+              <div key={k} style={{background:T.s2,borderRadius:7,padding:"10px 12px"}}>
+                <div style={{fontSize:9,fontWeight:700,color:T.dim,textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:4}}>{k}</div>
+                <div style={{fontSize:13,fontWeight:600,color:T.text}}>{v}</div>
+              </div>
+            ))}
+          </div>
+        </Panel>
+        <Panel><PHead title="Signatures" accent={T.indig}/>
+          <div style={{padding:"14px 16px",display:"flex",flexDirection:"column",gap:8}}>
+            {[["Prepared By",rec.prepBy,T.text],["Checked By",rec.checkBy,T.text],["Sponsor Approval","Pending",T.amber]].map(([role,name,color])=>(
+              <div key={role} style={{display:"flex",justifyContent:"space-between",padding:"10px 12px",background:T.s2,borderRadius:7}}>
+                <span style={{fontSize:12,color:T.mid}}>{role}</span>
+                <span style={{fontSize:13,fontWeight:700,color}}>{name}</span>
+              </div>
+            ))}
+          </div>
+        </Panel>
+      </div>
+    </div>);
+  }
+
+  const deadline="15/03/2026";
+  return(<div>
+    <div style={{marginBottom:22}}>
+      <h2 style={{fontSize:20,fontWeight:800,color:T.text,margin:"0 0 4px"}}>Product Accountability</h2>
+      <p style={{fontSize:12,color:T.mid,margin:0}}>End-of-study product reconciliation — all PAFs pending sponsor sign-off</p>
+    </div>
+    <InlineBanner sev="critical" icon="⏳" title="Destruction deadline: 15 March 2026 — 13 days remaining" body="5 PAFs are pending sponsor approval. If no response is received, archived samples must be destroyed per protocol. Send reminders to all sponsors today."/>
+    <InlineBanner sev="warning" icon="📦" title="CL-191 stock may be insufficient" body="8 units of Baby Diaper Pants remaining vs 6 participants yet to complete V1. Confirm adequate supply with Swara Baby before next application day."/>
+    <div style={{padding:"13px 18px",background:T.ambG,border:`1px solid ${T.amber}44`,borderRadius:10,marginBottom:20,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+      <div style={{fontSize:13,color:T.amber,fontWeight:600}}>⚠ <strong>{ACCOUNTABILITY_DATA.length} PAFs</strong> awaiting sponsor approval · 30-day destruction deadline active</div>
+      <Pill label={`Deadline: ${deadline}`} color={T.amber}/>
+    </div>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:20}}>
+      {[["Total PAFs",ACCOUNTABILITY_DATA.length,T.blue],["Pending Approval",ACCOUNTABILITY_DATA.length,T.amber],["Validated",ACCOUNTABILITY_DATA.filter(a=>a.valid).length,T.teal],["Days to Deadline",13,T.amber]].map(([label,n,color])=>(
+        <div key={label} style={{background:T.s1,border:`1px solid ${T.border}`,borderRadius:10,padding:"14px 16px",position:"relative",overflow:"hidden"}}>
+          <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:`linear-gradient(90deg,${color},transparent 70%)`}}/>
+          <div style={{fontSize:10,color:T.mid,marginBottom:8,fontWeight:500}}>{label}</div>
+          <div style={{fontSize:26,fontWeight:800,color,fontFamily:"Georgia,serif"}}>{n}</div>
+        </div>
+      ))}
+    </div>
+    <Panel>
+      <PHead title="Accountability Register" sub="Click any row to view full PAF" accent={T.amber}/>
+      <div style={{background:T.s2,padding:"8px 16px",borderBottom:`1px solid ${T.border}`,display:"grid",gridTemplateColumns:"1fr 1fr 80px 80px 80px 80px 100px 100px 70px",gap:10}}>
+        {["Study","Product / Batch","Rcvd","Used","Rem","Arch","Validation","Disposition",""].map(h=><span key={h} style={{fontSize:9,fontWeight:700,color:T.dim,textTransform:"uppercase",letterSpacing:"0.5px"}}>{h}</span>)}
+      </div>
+      {ACCOUNTABILITY_DATA.map((a,i)=>(
+        <div key={i} onClick={()=>setSelected(a.study)} style={{display:"grid",gridTemplateColumns:"1fr 1fr 80px 80px 80px 80px 100px 100px 70px",gap:10,padding:"13px 16px",borderBottom:`1px solid ${T.border}`,cursor:"pointer",alignItems:"center",transition:"background 0.15s"}} onMouseEnter={e=>e.currentTarget.style.background=T.s2} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+          <div><div style={{fontFamily:T.mono,fontSize:11,color:T.teal}}>{a.study}</div><div style={{fontSize:11,color:T.mid}}>{a.sponsor}</div></div>
+          <div><div style={{fontSize:12,fontWeight:600,color:T.text}}>{a.product}</div><div style={{fontFamily:T.mono,fontSize:10,color:T.dim}}>{a.batch.length>22?a.batch.slice(0,22)+"…":a.batch}</div></div>
+          <div style={{fontSize:13,fontWeight:600,color:T.text}}>{a.received}</div>
+          <div style={{fontSize:13,color:T.text}}>{a.used}</div>
+          <div style={{fontSize:13,color:T.text}}>{a.remaining}</div>
+          <div style={{fontSize:13,color:T.text}}>{a.archived}</div>
+          <Pill label={a.valid?"✓ Valid":"✗ Error"} color={a.valid?T.teal:T.rose}/>
+          <Pill label={a.disposition.split(" ").slice(0,2).join(" ")} color={T.amber}/>
+          <span style={{fontSize:12,color:T.teal,fontWeight:700}}>View →</span>
+        </div>
+      ))}
+    </Panel>
+  </div>);
+};
+
+// ─── AUDIT TRAIL PAGE ─────────────────────────────────────────────────────────
+const AuditPage=()=>{
+  const[objFilter,setObjFilter]=useState("ALL");
+  const[search,setSearch]=useState("");
+
+  const objs=["ALL",...[...new Set(AUDIT_DATA.map(a=>a.obj))]];
+  const filtered=AUDIT_DATA.filter(a=>{
+    if(objFilter!=="ALL"&&a.obj!==objFilter) return false;
+    if(search&&!a.field.toLowerCase().includes(search.toLowerCase())&&!a.by.toLowerCase().includes(search.toLowerCase())&&!a.reason.toLowerCase().includes(search.toLowerCase())) return false;
+    return true;
+  });
+
+  const objColor=o=>({Study:T.teal,Participant:T.blue,SkinScore:T.indig,AdverseEvent:T.rose,COA:T.amber,ProductAccountability:T.teal,ConsentRecord:T.blue})[o]||T.mid;
+
+  return(<div>
+    <div style={{marginBottom:22}}>
+      <h2 style={{fontSize:20,fontWeight:800,color:T.text,margin:"0 0 4px"}}>Audit Trail</h2>
+      <p style={{fontSize:12,color:T.mid,margin:0}}>Immutable change log — all field modifications captured with user, timestamp, and reason</p>
+    </div>
+    <InlineBanner sev="info" icon="🔒" title="Audit integrity confirmed — zero hard deletes" body="All 91 logged changes are soft edits with full before/after values, attributed user, and documented reason. No data has been permanently removed."/>
+    <InlineBanner sev="warning" icon="✏️" title="2 score corrections logged this cycle" body="Erythema score on V-001 and product accountability quantity for CL-183 were corrected post-entry. Both carry PI-signed justifications."/>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:20}}>
+      {[["Total Changes",AUDIT_DATA.length,T.blue,"📋"],["Unique Users",[...new Set(AUDIT_DATA.map(a=>a.by))].length,T.indig,"👤"],["Objects Modified",[...new Set(AUDIT_DATA.map(a=>a.obj))].length,T.teal,"🗂"],["Hard Deletes",0,T.teal,"🔒"]].map(([label,n,color,icon])=>(
+        <div key={label} style={{background:T.s1,border:`1px solid ${T.border}`,borderRadius:10,padding:"14px 16px",position:"relative",overflow:"hidden"}}>
+          <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:`linear-gradient(90deg,${color},transparent 70%)`}}/>
+          <div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}><span style={{fontSize:10,color:T.mid,fontWeight:500}}>{label}</span><span style={{fontSize:14,opacity:0.7}}>{icon}</span></div>
+          <div style={{fontSize:26,fontWeight:800,color,fontFamily:"Georgia,serif"}}>{n}</div>
+        </div>
+      ))}
+    </div>
+    <div style={{display:"flex",gap:10,marginBottom:16,flexWrap:"wrap",alignItems:"center"}}>
+      <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
+        {objs.map(o=>(
+          <button key={o} onClick={()=>setObjFilter(o)} style={{padding:"5px 11px",borderRadius:5,border:`1px solid ${objFilter===o?T.teal:T.border}`,background:objFilter===o?T.tealG:"transparent",color:objFilter===o?T.teal:T.mid,fontSize:11,fontWeight:objFilter===o?700:400,cursor:"pointer"}}>{o}</button>
+        ))}
+      </div>
+      <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search field, user, reason..." style={{background:T.s2,border:`1px solid ${T.border}`,borderRadius:7,padding:"7px 12px",fontSize:12,color:T.text,outline:"none",minWidth:200}} onFocus={e=>e.target.style.borderColor=T.teal} onBlur={e=>e.target.style.borderColor=T.border}/>
+      <span style={{fontSize:11,color:T.dim,marginLeft:"auto"}}>{filtered.length} entries</span>
+    </div>
+    <Panel>
+      <PHead title="Change Log" sub="All edits are soft — no hard deletes permitted" accent={T.teal}
+        right={<Pill label="IS 4011:2018 Compliant" color={T.teal}/>}
+      />
+      <div style={{background:T.s2,padding:"8px 16px",borderBottom:`1px solid ${T.border}`,display:"grid",gridTemplateColumns:"90px 120px 140px 100px 100px 120px 130px 1fr",gap:10}}>
+        {["Audit ID","Object","Field","Old Value","New Value","Modified By","Timestamp","Reason"].map(h=><span key={h} style={{fontSize:9,fontWeight:700,color:T.dim,textTransform:"uppercase",letterSpacing:"0.5px"}}>{h}</span>)}
+      </div>
+      {filtered.map((log,i)=>(
+        <div key={log.id} style={{display:"grid",gridTemplateColumns:"90px 120px 140px 100px 100px 120px 130px 1fr",gap:10,padding:"11px 16px",borderBottom:`1px solid ${T.border}`,alignItems:"center",background:i%2===0?"transparent":T.s0,transition:"background 0.1s"}} onMouseEnter={e=>e.currentTarget.style.background=T.s2} onMouseLeave={e=>e.currentTarget.style.background=i%2===0?"transparent":T.s0}>
+          <span style={{fontFamily:T.mono,fontSize:10,color:T.dim}}>{log.id}</span>
+          <Pill label={log.obj} color={objColor(log.obj)}/>
+          <span style={{fontFamily:T.mono,fontSize:11,color:T.text}}>{log.field}</span>
+          <span style={{background:T.roseG,color:T.rose,fontFamily:T.mono,fontSize:10,padding:"2px 7px",borderRadius:4,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",maxWidth:95,display:"block"}}>{log.old}</span>
+          <span style={{background:T.tealG,color:T.teal,fontFamily:T.mono,fontSize:10,padding:"2px 7px",borderRadius:4,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",maxWidth:95,display:"block"}}>{log.new}</span>
+          <span style={{fontSize:12,fontWeight:600,color:T.text}}>{log.by}</span>
+          <span style={{fontFamily:T.mono,fontSize:10,color:T.mid,whiteSpace:"nowrap"}}>{log.at}</span>
+          <span style={{fontSize:11,color:T.mid,lineHeight:1.4}}>{log.reason}</span>
+        </div>
+      ))}
+    </Panel>
+    <Panel style={{marginTop:16}}>
+      <PHead title="Audit Compliance Rules" accent={T.indig}/>
+      <div style={{padding:"14px 16px",display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+        {["No hard deletes — all records soft-deleted with reason","Every edit logged: who changed it, what, when, and why","Old and new values preserved verbatim as text snapshots","All users must be identified — anonymous edits blocked","Audit log itself is append-only and tamper-evident","Export available to sponsor on request for GCP compliance"].map(r=>(
+          <div key={r} style={{display:"flex",gap:8,padding:"6px 0",borderBottom:`1px solid ${T.border}`,fontSize:12,color:T.mid}}>
+            <span style={{color:T.teal,fontWeight:700,flexShrink:0}}>·</span>{r}
+          </div>
+        ))}
+      </div>
+    </Panel>
+  </div>);
+};
+
+
+// ─── INLINE BANNER ────────────────────────────────────────────────────────────
+// Reusable contextual warning banner for use inside any module page
+const InlineBanner=({sev="warning",icon,title,body,action,onAction})=>{
+  const[dismissed,setDismissed]=useState(false);
+  if(dismissed) return null;
+  const c={critical:T.rose,warning:T.amber,info:T.teal}[sev];
+  const bg={critical:`${T.rose}0a`,warning:`${T.amber}08`,info:`${T.teal}07`}[sev];
+  return(
+    <div style={{background:bg,border:`1px solid ${c}33`,borderLeft:`4px solid ${c}`,borderRadius:8,padding:"12px 14px",marginBottom:14,display:"flex",gap:10,alignItems:"flex-start"}}>
+      <span style={{fontSize:16,flexShrink:0,marginTop:1}}>{icon}</span>
+      <div style={{flex:1,minWidth:0}}>
+        <div style={{fontSize:12,fontWeight:700,color:c,marginBottom:3}}>{title}</div>
+        {body&&<div style={{fontSize:12,color:T.mid,lineHeight:1.5,marginBottom:action?6:0}}>{body}</div>}
+        {action&&onAction&&<button onClick={onAction} style={{background:"none",border:"none",color:c,fontSize:11,fontWeight:700,cursor:"pointer",padding:0}}>{action} →</button>}
+      </div>
+      <button onClick={()=>setDismissed(true)} style={{background:"none",border:"none",color:T.dim,fontSize:14,cursor:"pointer",padding:"0 2px",lineHeight:1,flexShrink:0}} title="Dismiss">×</button>
+    </div>
+  );
+};
+
+// ─── ALERTS PAGE ──────────────────────────────────────────────────────────────
+const AlertsPage=({onNav})=>{
+  const[filter,setFilter]=useState("all");
+  const[dismissed,setDismissed]=useState(new Set());
+
+  const toggle=id=>setDismissed(prev=>{const n=new Set(prev);n.has(id)?n.delete(id):n.add(id);return n;});
+  const filtered=ALERTS.filter(a=>filter==="all"||a.sev===filter).filter(a=>!dismissed.has(a.id));
+  const critCount=ALERTS.filter(a=>a.sev==="critical").length;
+  const warnCount=ALERTS.filter(a=>a.sev==="warning").length;
+  const infoCount=ALERTS.filter(a=>a.sev==="info").length;
+
+  return(<div>
+    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:22}}>
+      <div>
+        <h2 style={{fontSize:20,fontWeight:800,color:T.text,margin:"0 0 4px"}}>System Alerts</h2>
+        <p style={{fontSize:12,color:T.mid,margin:0}}>All active compliance, protocol, and operational alerts · IS 4011:2018</p>
+      </div>
+      {dismissed.size>0&&<button onClick={()=>setDismissed(new Set())} style={{background:"none",border:`1px solid ${T.border}`,borderRadius:7,padding:"7px 14px",color:T.mid,fontSize:12,cursor:"pointer"}}>Restore {dismissed.size} dismissed</button>}
+    </div>
+
+    {/* Summary row */}
+    <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:20}}>
+      {[
+        ["Total Alerts",ALERTS.length,T.blue,"🔔"],
+        ["Critical",critCount,T.rose,"🚨"],
+        ["Warnings",warnCount,T.amber,"⚠️"],
+        ["Info",infoCount,T.teal,"ℹ️"],
+      ].map(([label,n,color,icon])=>(
+        <div key={label} style={{background:T.s1,border:`1px solid ${color}33`,borderRadius:10,padding:"14px 16px",position:"relative",overflow:"hidden",cursor:"pointer"}} onClick={()=>setFilter(label==="Total Alerts"?"all":label.toLowerCase())}>
+          <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:`linear-gradient(90deg,${color},transparent 70%)`}}/>
+          <div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}><span style={{fontSize:10,color:T.mid,fontWeight:500}}>{label}</span><span style={{fontSize:14,opacity:0.8}}>{icon}</span></div>
+          <div style={{fontSize:28,fontWeight:800,color,fontFamily:"Georgia,serif",lineHeight:1}}>{n}</div>
+        </div>
+      ))}
+    </div>
+
+    {/* Filter pills */}
+    <div style={{display:"flex",gap:6,marginBottom:18,flexWrap:"wrap",alignItems:"center"}}>
+      {[["all","All"],["critical","Critical"],["warning","Warning"],["info","Info"]].map(([val,label])=>{
+        const c={all:T.blue,critical:T.rose,warning:T.amber,info:T.teal}[val];
+        return(<button key={val} onClick={()=>setFilter(val)} style={{padding:"6px 14px",borderRadius:7,border:`1px solid ${filter===val?c:T.border}`,background:filter===val?`${c}15`:"transparent",color:filter===val?c:T.mid,fontSize:12,fontWeight:filter===val?700:400,cursor:"pointer"}}>{label}</button>);
+      })}
+      <span style={{fontSize:11,color:T.dim,marginLeft:"auto"}}>{filtered.length} active · {dismissed.size} dismissed</span>
+    </div>
+
+    {/* Grouped alerts */}
+    {["critical","warning","info"].map(sev=>{
+      const sevAlerts=filtered.filter(a=>a.sev===sev);
+      if(sevAlerts.length===0) return null;
+      const c={critical:T.rose,warning:T.amber,info:T.teal}[sev];
+      const sevLabel={critical:"Critical — Immediate Action Required",warning:"Warnings — Review Soon",info:"Informational"}[sev];
+      return(<div key={sev} style={{marginBottom:18}}>
+        <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
+          <div style={{width:6,height:6,borderRadius:"50%",background:c,boxShadow:sev==="critical"?`0 0 6px ${c}`:"none"}}/>
+          <span style={{fontSize:11,fontWeight:800,color:c,textTransform:"uppercase",letterSpacing:"0.7px"}}>{sevLabel}</span>
+          <div style={{flex:1,height:1,background:`${c}22`}}/>
+          <span style={{fontSize:10,color:c,background:`${c}18`,border:`1px solid ${c}33`,borderRadius:10,padding:"1px 8px",fontWeight:700}}>{sevAlerts.length}</span>
+        </div>
+        <div style={{display:"flex",flexDirection:"column",gap:8}}>
+          {sevAlerts.map(a=>(
+            <div key={a.id} style={{background:T.s1,border:`1px solid ${c}22`,borderLeft:`4px solid ${c}`,borderRadius:10,padding:"14px 16px",display:"flex",gap:12,alignItems:"flex-start",transition:"background 0.15s"}} onMouseEnter={e=>e.currentTarget.style.background=T.s2} onMouseLeave={e=>e.currentTarget.style.background=T.s1}>
+              <span style={{fontSize:20,flexShrink:0}}>{a.icon}</span>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:5,flexWrap:"wrap"}}>
+                  <span style={{fontSize:13,fontWeight:700,color:T.text}}>{a.title}</span>
+                  <span style={{fontSize:9,fontWeight:700,color:c,background:`${c}18`,border:`1px solid ${c}33`,borderRadius:3,padding:"2px 6px",textTransform:"uppercase",letterSpacing:"0.4px",flexShrink:0}}>{a.tag}</span>
+                </div>
+                <p style={{fontSize:12,color:T.mid,margin:"0 0 8px",lineHeight:1.6}}>{a.body}</p>
+                <button onClick={()=>onNav(a.mod)} style={{background:"none",border:`1px solid ${c}44`,borderRadius:5,padding:"4px 12px",color:c,fontSize:11,fontWeight:700,cursor:"pointer"}}>{a.act} →</button>
+              </div>
+              <button onClick={()=>toggle(a.id)} style={{background:"none",border:"none",color:T.dim,fontSize:16,cursor:"pointer",padding:"0 4px",lineHeight:1,flexShrink:0,marginTop:-2}} title="Dismiss">×</button>
+            </div>
+          ))}
+        </div>
+      </div>);
+    })}
+
+    {filtered.length===0&&(
+      <div style={{textAlign:"center",padding:"60px 20px",color:T.mid}}>
+        <div style={{fontSize:40,marginBottom:12}}>✓</div>
+        <div style={{fontSize:15,fontWeight:700,color:T.teal,marginBottom:6}}>All alerts cleared</div>
+        <div style={{fontSize:13}}>No active alerts for the current filter.</div>
+      </div>
+    )}
+  </div>);
+};
+
+const Placeholder=({item,onBack})=>(<div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",minHeight:420,gap:16,textAlign:"center"}}><div style={{fontSize:48}}>{item.icon}</div><h2 style={{fontSize:20,fontWeight:800,color:T.text,margin:0}}>{item.label}</h2><p style={{fontSize:13,color:T.mid,maxWidth:360,lineHeight:1.7,margin:0}}>This module is queued for the next build session. Architecture and data model are fully defined.</p><div style={{padding:"10px 18px",background:T.tealG,border:`1px solid ${T.teal}40`,borderRadius:8,fontSize:12,color:T.teal,fontWeight:600}}>Coming up next</div><button onClick={()=>onBack("dashboard")} style={{background:"none",border:"none",color:T.teal,fontSize:13,fontWeight:700,cursor:"pointer"}}>← Back to Dashboard</button></div>);
+
+export default function App(){
+  const[page,setPage]=useState("dashboard");
+  const[studies,setStudies]=useState(STUDIES_DATA);
+  const[participants,setParticipants]=useState(PARTICIPANTS_DATA);
+
+  const handleAddParticipant=p=>{
+    setParticipants(prev=>[...prev,p]);
+    setStudies(prev=>prev.map(s=>s.id===p.study?{...s,enrolled:s.enrolled+1}:s));
+  };
+  const handleUpdateParticipant=updated=>{
+    setParticipants(prev=>prev.map(p=>p.id===updated.id?updated:p));
+  };
+
+  const current=NAV.find(n=>n.id===page);
+  const builtPages=["dashboard","studies","participants","coa","alerts","execution","adverse","accountability","audit"];
+  return(<div style={{display:"flex",height:"100vh",background:T.bg,fontFamily:"'DM Sans','Segoe UI',system-ui,sans-serif",overflow:"hidden"}}>
+    <div style={{width:210,background:T.s0,borderRight:`1px solid ${T.border}`,display:"flex",flexDirection:"column",flexShrink:0}}>
+      <div style={{padding:"18px 16px",borderBottom:`1px solid ${T.border}`}}>
+        <div style={{display:"flex",alignItems:"center",gap:10}}>
+          <div style={{width:30,height:30,borderRadius:8,background:`linear-gradient(135deg,${T.teal},${T.blue})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,fontWeight:800,color:T.bg}}>⬡</div>
+          <div><div style={{fontSize:14,fontWeight:800,color:T.text,lineHeight:1}}>ClinTrack</div><div style={{fontSize:9,color:T.mid,marginTop:2,letterSpacing:"0.5px"}}>CLINICAL OS</div></div>
+        </div>
+      </div>
+      <nav style={{flex:1,padding:"10px 8px",overflowY:"auto"}}>
+        {[["main","CORE"],["ops","OPERATIONS"],["compliance","COMPLIANCE"]].map(([grp,grpLabel])=>(
+          <div key={grp} style={{marginBottom:6}}>
+            <div style={{fontSize:9,fontWeight:700,color:T.dim,letterSpacing:"1px",padding:"10px 10px 5px"}}>{grpLabel}</div>
+            {NAV.filter(n=>n.group===grp).map(item=>{
+              const active=page===item.id;
+              const built=builtPages.includes(item.id);
+              const isCriticalAlert=item.id==="alerts";
+              const critBadge=ALERTS.filter(a=>a.sev==="critical").length;
+              return(<button key={item.id} onClick={()=>setPage(item.id)} style={{display:"flex",alignItems:"center",gap:9,width:"100%",padding:"9px 10px",borderRadius:8,border:"none",cursor:"pointer",marginBottom:1,textAlign:"left",background:active?T.tealG:"transparent",color:active?T.teal:T.mid,fontWeight:active?700:400,fontSize:13,borderLeft:active?`2px solid ${T.teal}`:"2px solid transparent",transition:"all 0.15s"}} onMouseEnter={e=>{if(!active){e.currentTarget.style.background=T.s2;e.currentTarget.style.color=T.text;}}} onMouseLeave={e=>{if(!active){e.currentTarget.style.background="transparent";e.currentTarget.style.color=T.mid;}}}>
+                <span style={{width:20,textAlign:"center",fontSize:14,flexShrink:0}}>{item.icon}</span>
+                <span style={{flex:1}}>{item.label}</span>
+                {isCriticalAlert&&critBadge>0&&<span style={{fontSize:9,fontWeight:800,color:"#fff",background:T.rose,borderRadius:10,padding:"1px 6px",minWidth:16,textAlign:"center",boxShadow:`0 0 6px ${T.rose}88`}}>{critBadge}</span>}
+                {!isCriticalAlert&&!built&&!active&&<span style={{fontSize:8,fontWeight:700,color:T.dim,background:T.s3,borderRadius:3,padding:"1px 5px"}}>SOON</span>}
+              </button>);
+            })}
+          </div>
+        ))}
+      </nav>
+      <div style={{padding:"12px 16px",borderTop:`1px solid ${T.border}`,borderBottom:`1px solid ${T.border}`}}>
+        <div style={{fontSize:9,fontWeight:700,color:T.dim,letterSpacing:"1px",marginBottom:8}}>SYSTEM STATUS</div>
+        {[[T.teal,"All systems operational"],[T.rose,"2 critical alerts active"],[T.amber,"PAF deadline: 13 days"]].map(([c,label])=>(
+          <div key={label} style={{display:"flex",gap:6,alignItems:"center",marginBottom:5}}><div style={{width:5,height:5,borderRadius:"50%",background:c,flexShrink:0,boxShadow:`0 0 4px ${c}`}}/><span style={{fontSize:10,color:c,fontWeight:600}}>{label}</span></div>
+        ))}
+      </div>
+      <div style={{padding:"13px 16px"}}>
+        <div style={{display:"flex",alignItems:"center",gap:9}}>
+          <div style={{width:30,height:30,borderRadius:"50%",background:`linear-gradient(135deg,${T.teal}88,${T.blue}88)`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,color:T.bg,flexShrink:0}}>PS</div>
+          <div><div style={{fontSize:12,color:T.text,fontWeight:600,lineHeight:1}}>Priya Singh</div><div style={{fontSize:10,color:T.mid,marginTop:2}}>Study Coordinator</div></div>
+        </div>
+      </div>
+    </div>
+    <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden"}}>
+      <div style={{background:T.s0,borderBottom:`1px solid ${T.border}`,padding:"11px 26px",display:"flex",justifyContent:"space-between",alignItems:"center",flexShrink:0}}>
+        <div style={{fontSize:13,color:T.mid}}><span style={{color:T.dim}}>ClinTrack</span><span style={{color:T.dim}}> › </span><span style={{color:T.text,fontWeight:600}}>{current?.label}</span></div>
+        <div style={{display:"flex",gap:12,alignItems:"center"}}><span style={{fontFamily:T.mono,fontSize:10,color:T.dim}}>IS 4011:2018</span><span style={{fontSize:10,color:T.mid}}>C.L.A.I.M.S. Pvt. Ltd.</span><div style={{width:6,height:6,borderRadius:"50%",background:T.teal,boxShadow:`0 0 7px ${T.teal}`}}/><span style={{fontSize:11,color:T.teal,fontWeight:700}}>Live</span></div>
+      </div>
+      <div style={{flex:1,overflowY:"auto",padding:"26px 30px"}}>
+        {page==="dashboard"&&<DashboardPage onNav={setPage}/>}
+        {page==="studies"&&<StudiesPage studies={studies} setStudies={setStudies} participants={participants} onAddParticipant={handleAddParticipant} onUpdateParticipant={handleUpdateParticipant}/>}
+        {page==="participants"&&<ParticipantsPage studies={studies} participants={participants}/>}
+        {page==="coa"&&<COAPage/>}
+        {page==="alerts"&&<AlertsPage onNav={setPage}/>}
+        {page==="execution"&&<ExecutionPage/>}
+        {page==="adverse"&&<AdverseEventsPage/>}
+        {page==="accountability"&&<AccountabilityPage/>}
+        {page==="audit"&&<AuditPage/>}
+        {!builtPages.includes(page)&&<Placeholder item={current} onBack={setPage}/>}
+      </div>
+    </div>
+  </div>);
+}
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App/>);
+  </script>
+</body>
+</html>
